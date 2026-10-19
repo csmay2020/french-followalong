@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>法语跟读 · v4</title>
+<title>法语跟读 · v5</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
   body { background:#f6f1e7; color:#3d3428; font-family: Georgia, "Songti SC", serif; margin:0; padding:16px; -webkit-tap-highlight-color: transparent; }
@@ -49,7 +49,7 @@
 </head>
 <body>
 <div class="wrap">
-  <h1>法语跟读 <span class="sub">v4 · 免费版</span></h1>
+  <h1>法语跟读 <span class="sub">v5 · 免费版</span></h1>
   <p class="hint">粘贴法语课文（或📷拍照识别）→ 点"开始朗读"（整句高亮跟读）→ 点词：朗读＋显示中文/英文 → 每句右上角"译"：看整句翻译。</p>
   <textarea id="src" placeholder="把法语课文粘贴到这里…"></textarea>
   <div class="controls">
@@ -286,6 +286,21 @@
     };
     rd.onerror = function(){ ocrDone(); alert('图片读取失败，换一张试试'); };
     rd.readAsDataURL(file);
+  }
+  // OCR 后整理：连书页折行、去 * _ 毛刺、丢掉无实质文字的碎片（如 "7)"）
+  function tidyOcr(t){
+    var paras = t.split(/\n[ \t]*\n/);
+    paras = paras.map(function(p){
+      return p.replace(/-[ \t]*\n[ \t]*/g, '').replace(/[ \t]*\n[ \t]*/g, ' ');
+    });
+    t = paras.join('\n\n');
+    t = t.replace(/_/g, '').replace(/\*/g, ' ');
+    t = t.replace(/[ \t]+/g, ' ');
+    var lines = t.split('\n').filter(function(ln){
+      var letters = ln.replace(/[^a-zA-ZàâäçéèêëîïôöùûüœæÀÂÄÇÉÈÊËÎÏÔÖÙÛÜŒÆ]/g, '');
+      return letters.length >= 3;
+    });
+    return lines.join('\n').trim();
   }
   function runOcr(canvas){
     var p = ocrWorker ? Promise.resolve(ocrWorker) :
