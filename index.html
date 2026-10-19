@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>法语跟读 · v4</title>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<style>
+  body { background:#f6f1e7; color:#3d3428; font-family: Georgia, "Songti SC", serif; margin:0; padding:16px; -webkit-tap-highlight-color: transparent; }
+  .wrap { max-width:720px; margin:0 auto; }
+  h1 { font-size:22px; color:#5a4a33; margin:4px 0 2px; }
+  .sub { font-size:13px; color:#8a7a5f; font-weight:normal; }
+  .hint { font-size:13px; color:#8a7a5f; line-height:1.7; margin:8px 0; }
+  textarea { width:100%; min-height:130px; box-sizing:border-box; font-size:16px; line-height:1.7;
+    background:#fffdf8; border:1px solid #e7dcc6; border-radius:12px; padding:12px 14px; color:#3d3428; font-family: Georgia, serif; }
+  .controls { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:12px 0; }
+  button { font-size:16px; padding:10px 16px; border-radius:12px; border:1px solid #d9c9a8;
+    background:#fffdf8; color:#5a4a33; cursor:pointer; }
+  button.primary { background:#e8a93d; border-color:#d1942a; color:#fff; font-weight:bold; }
+  button:active { transform:scale(.97); }
+  button:disabled { opacity:.55; }
+  label.ctl { font-size:14px; color:#5a4a33; display:flex; align-items:center; gap:6px;
+    background:#fffdf8; border:1px solid #e7dcc6; border-radius:12px; padding:8px 12px; }
+  select { font-size:14px; max-width:180px; background:#fff; border:1px solid #d9c9a8; border-radius:8px; padding:4px; }
+  input[type=range] { width:110px; }
+  #reader { margin-top:6px; padding-bottom:120px; }
+  .sent { position:relative; background:#fffdf8; border:1px solid #e7dcc6; border-radius:12px; padding:14px 16px;
+    margin-bottom:10px; font-size:21px; line-height:2.1; transition:background .2s; }
+  .sent.active { background:#ffefd0; border-color:#e8a93d; box-shadow:0 2px 8px rgba(232,169,61,.25); }
+  .w { cursor:pointer; border-radius:6px; padding:3px 1px; }
+  .w:active { background:#ffe1a8; }
+  .w.speaking { background:#ffd97a; }
+  .trbtn { position:absolute; top:8px; right:8px; font-size:13px; padding:4px 12px; border-radius:9px; }
+  .trbox { margin-top:8px; }
+  .tr { font-size:15px; line-height:1.7; color:#6b5a3e; background:#faf5e9; border-radius:8px; padding:8px 10px; margin-top:6px; }
+  .tr .lbl { display:inline-block; font-size:12px; color:#a3742a; border:1px solid #e0c98f; border-radius:6px;
+    padding:1px 8px; margin-right:8px; vertical-align:1px; }
+  #tbar { position:fixed; left:50%; transform:translateX(-50%); bottom:12px; width:calc(100% - 32px); max-width:688px;
+    background:#fffdf8; border:1px solid #e0c98f; border-radius:14px; box-shadow:0 4px 16px rgba(90,74,51,.18);
+    padding:10px 14px; z-index:10; }
+  #tbar .tw { display:flex; align-items:center; justify-content:space-between; }
+  #tbar .tw b { font-size:19px; color:#5a4a33; }
+  #tbar .tw button { font-size:13px; padding:2px 10px; border-radius:8px; }
+  #tbar .tl { font-size:15px; color:#6b5a3e; margin-top:4px; line-height:1.6; }
+  #tbar .tl .lbl { display:inline-block; font-size:12px; color:#a3742a; border:1px solid #e0c98f; border-radius:6px;
+    padding:1px 8px; margin-right:8px; }
+  .foot { font-size:12px; color:#a08c68; margin-top:14px; line-height:1.7; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>法语跟读 <span class="sub">v4 · 免费版</span></h1>
+  <p class="hint">粘贴法语课文（或📷拍照识别）→ 点"开始朗读"（整句高亮跟读）→ 点词：朗读＋显示中文/英文 → 每句右上角"译"：看整句翻译。</p>
+  <textarea id="src" placeholder="把法语课文粘贴到这里…"></textarea>
+  <div class="controls">
+    <button id="btnSample">载入《Les chats》示例</button>
+    <button id="btnPlay" class="primary">▶ 开始朗读</button>
+    <button id="btnStop">⏹ 停止</button>
+    <button id="btnOcr">📷 拍照识别</button><input type="file" id="imgPick" accept="image/*" hidden>
+    <label class="ctl">语速 <input id="rate" type="range" min="0.6" max="1.2" step="0.1" value="0.8"><span id="rateVal">0.8</span></label>
+    <label class="ctl">语音 <select id="voice"></select></label>
+  </div>
+  <div id="reader"></div>
+  <p class="foot">翻译走 Google 免费接口（无需 key）；偶尔刷出"翻译暂不可用"多半是网络问题，过会儿再试。📷 拍照识别：首次使用需联网下载法语字库（十几 MB，建议 WiFi），印刷体效果好、手写体不行。课文自动保存在本机。</p>
+</div>
+<div id="tbar" hidden>
+  <div class="tw"><b id="twWord"></b><button id="twX">✕</button></div>
+  <div class="tl"><span class="lbl">中文</span><span id="twZh">…</span></div>
+  <div class="tl"><span class="lbl">EN</span><span id="twEn">…</span></div>
+</div>
+<script>
+(function(){
+  "use strict";
+  var src = document.getElementById('src');
+  var reader = document.getElementById('reader');
+  var voiceSel = document.getElementById('voice');
+  var rateInput = document.getElementById('rate');
+  var rateVal = document.getElementById('rateVal');
+  var tbar = document.getElementById('tbar');
+  var twWord = document.getElementById('twWord');
+  var twZh = document.getElementById('twZh');
+  var twEn = document.getElementById('twEn');
+  var voices = [];
+  var speaking = false;
+  var wordSpeakingEl = null;
+  var wordTok = 0;
+  var trCache = {};
+  var LS_KEY = 'fr_follow_src_v1';
+
+  var SAMPLE = "Les chats sont plus indépendants que les chiens, ils restent plus facilement seuls.\n" +
+    "Cela ne veut pas dire qu'un chat ne s'attache pas à ses maîtres, au contraire !\n" +
+    "Même s'il lui arrive de partir pendant toute une journée en promenade, il ne manque pas de revenir le soir pour retrouver sa maison et ceux qui l'entourent.\n" +
+    "Il aime que l'on passe du temps avec lui à le caresser ou à jouer, et il ronronne de bonheur.\n" +
+    "Chaque chat est différent. Certains adorent être tenus dans les bras alors que d'autres détestent cela !";
+
+  function supported(){ return ('speechSynthesis' in window); }
+
+  function loadVoices(){
+    if(!supported()) return;
+    var all = speechSynthesis.getVoices();
+    var fr = all.filter(function(v){ return v.lang && v.lang.toLowerCase().indexOf('fr') === 0; });
+    voices = fr.length ? fr : all;
+    voiceSel.innerHTML = '';
+    voices.forEach(function(v, i){
+      var o = document.createElement('option');
+      o.value = i; o.textContent = v.name + ' (' + v.lang + ')';
+      voiceSel.appendChild(o);
+    });
+    var idx = voices.findIndex(function(v){ return v.lang === 'fr-FR'; });
+    if(idx < 0) idx = voices.findIndex(function(v){ return v.lang && v.lang.toLowerCase().indexOf('fr') === 0; });
+    if(idx >= 0) voiceSel.value = idx;
+  }
+
+  function pickVoice(){ var v = voices[parseInt(voiceSel.value, 10)]; return v || null; }
+  function rate(){ return parseFloat(rateInput.value); }
+  function cleanWord(w){ return w.replace(/[«»""]/g, ''); }
+  function cleanForTr(w){ return w.replace(/^[«»"“”'(\[]+|[»"“”'().,!?;:…]+$/g, ''); }
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+
+  // 免费翻译（Google，无 key）：fr -> zh-CN / en
+  function trKey(text, target){ return 'g|' + target + '|' + text; }
+  function translate(text, target){
+    var k = trKey(text, target);
+    if(trCache[k] !== undefined) return Promise.resolve(trCache[k]);
+    if(!window.fetch) return Promise.resolve(null);
+    var url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=fr&tl=' + target + '&dt=t&q=' + encodeURIComponent(text);
+    return fetch(url).then(function(r){ return r.json(); }).then(function(j){
+      var t = null;
+      try{ if(j && j[0]) t = j[0].map(function(seg){ return seg[0]; }).join(''); }catch(e){ t = null; }
+      if(!t || !t.trim()) t = null;
+      trCache[k] = t;
+      return t;
+    }).catch(function(){ trCache[k] = null; return null; });
+  }
+
+  function splitSentences(text){
+    var out = [];
+    text.split(/\n+/).forEach(function(para){
+      para = para.trim();
+      if(!para) return;
+      var m = para.match(/[^.!?…]+[.!?…]+["»”']?|[^\n]+$/g);
+      if(m) m.forEach(function(s){ s = s.trim(); if(s) out.push(s); });
+    });
+    return out;
+  }
+
+  function clearActive(){
+    var act = reader.querySelectorAll('.sent.active');
+    for(var i = 0; i < act.length; i++) act[i].classList.remove('active');
+  }
+
+  function stop(){
+    speaking = false;
+    if(supported()) speechSynthesis.cancel();
+    clearActive();
+  }
+
+  function render(){
+    stop();
+    reader.innerHTML = '';
+    var sents = splitSentences(src.value);
+    sents.forEach(function(s){
+      var div = document.createElement('div');
+      div.className = 'sent';
+      div.setAttribute('data-text', s);
+      s.split(/(\s+)/).forEach(function(tok){
+        if(!tok) return;
+        if(/^\s+$/.test(tok)){ div.appendChild(document.createTextNode(tok)); return; }
+        var sp = document.createElement('span');
+        sp.className = 'w'; sp.textContent = tok;
+        sp.addEventListener('click', function(){ speakWord(tok, sp); });
+        div.appendChild(sp);
+      });
+      var btn = document.createElement('button');
+      btn.className = 'trbtn'; btn.textContent = '译';
+      btn.addEventListener('click', function(ev){ ev.stopPropagation(); toggleSentTr(div, btn); });
+      div.appendChild(btn);
+      reader.appendChild(div);
+    });
+    try{ localStorage.setItem(LS_KEY, src.value); }catch(e){}
+  }
+
+  // 整句翻译：展开/收起 中文＋英文
+  function toggleSentTr(div, btn){
+    var box = div.querySelector('.trbox');
+    if(box){ box.hidden = !box.hidden; btn.textContent = box.hidden ? '译' : '收'; return; }
+    btn.textContent = '…'; btn.disabled = true;
+    var text = div.getAttribute('data-text');
+    Promise.all([translate(text, 'zh-CN'), translate(text, 'en')]).then(function(r){
+      btn.disabled = false; btn.textContent = '收';
+      var b = document.createElement('div');
+      b.className = 'trbox';
+      b.innerHTML = '<div class="tr"><span class="lbl">中文</span>' + esc(r[0] || '翻译暂不可用') + '</div>' +
+                    '<div class="tr"><span class="lbl">EN</span>' + esc(r[1] || '翻译暂不可用') + '</div>';
+      div.appendChild(b);
+    });
+  }
+
+  // 点词：朗读＋底部卡片显示中文/英文
+  function showWordCard(word){
+    var q = cleanForTr(word);
+    var my = ++wordTok;
+    tbar.hidden = false;
+    twWord.textContent = word;
+    twZh.textContent = '…'; twEn.textContent = '…';
+    if(!q){ twZh.textContent = '—'; twEn.textContent = '—'; return; }
+    translate(q, 'zh-CN').then(function(t){ if(my === wordTok) twZh.textContent = t || '翻译暂不可用'; });
+    translate(q, 'en').then(function(t){ if(my === wordTok) twEn.textContent = t || '翻译暂不可用'; });
+  }
+
+  function speakWord(word, el){
+    if(!supported()) return;
+    stop();
+    var u = new SpeechSynthesisUtterance(cleanWord(word));
+    u.lang = 'fr-FR';
+    var v = pickVoice(); if(v) u.voice = v;
+    u.rate = rate();
+    if(wordSpeakingEl) wordSpeakingEl.classList.remove('speaking');
+    wordSpeakingEl = el; el.classList.add('speaking');
+    var done = function(){ el.classList.remove('speaking'); if(wordSpeakingEl === el) wordSpeakingEl = null; };
+    u.onend = done; u.onerror = done;
+    speechSynthesis.speak(u);
+    showWordCard(word);
+  }
+
+  function play(){
+    if(!supported()){ alert('这个浏览器不支持朗读'); return; }
+    render();
+    var sents = reader.querySelectorAll('.sent');
+    if(!sents.length) return;
+    stop();
+    speaking = true;
+    var i = 0;
+    (function next(){
+      if(!speaking || i >= sents.length){ speaking = false; clearActive(); return; }
+      var div = sents[i];
+      clearActive(); div.classList.add('active');
+      try{ div.scrollIntoView({block:'nearest', behavior:'smooth'}); }catch(e){}
+      var u = new SpeechSynthesisUtterance(div.getAttribute('data-text'));
+      u.lang = 'fr-FR';
+      var v = pickVoice(); if(v) u.voice = v;
+      u.rate = rate();
+      u.onend = function(){ i++; next(); };
+      u.onerror = function(){ i++; next(); };
+      speechSynthesis.speak(u);
+    })();
+  }
+
+  document.getElementById('btnPlay').addEventListener('click', play);
+  document.getElementById('btnStop').addEventListener('click', stop);
+  document.getElementById('btnSample').addEventListener('click', function(){
+    src.value = SAMPLE; render(); src.focus();
+  });
+  document.getElementById('twX').addEventListener('click', function(){ tbar.hidden = true; });
+
+  // 拍照识别课文（Tesseract.js，法语，首次使用需联网下载字库）
+  var btnOcr = document.getElementById('btnOcr');
+  var imgPick = document.getElementById('imgPick');
+  var ocrWorker = null;
+  var OCR_LABEL = '📷 拍照识别';
+  var OCR_ZH = { 'loading tesseract core': '加载识别核心', 'initializing tesseract': '初始化识别',
+    'loading language traineddata': '下载法语字库（首次较慢）', 'initializing api': '初始化识别', 'recognizing text': '识别中' };
+  btnOcr.addEventListener('click', function(){ imgPick.click(); });
+  imgPick.addEventListener('change', function(){
+    var f = imgPick.files && imgPick.files[0];
+    imgPick.value = '';
+    if(f) doOcr(f);
+  });
+  function ocrDone(){ btnOcr.disabled = false; btnOcr.textContent = OCR_LABEL; }
+  function doOcr(file){
+    if(!window.Tesseract){ alert('识别组件还没加载好（需联网），刷新页面重试'); return; }
+    btnOcr.disabled = true; btnOcr.textContent = '读图中…';
+    var rd = new FileReader();
+    rd.onload = function(){
+      var img = new Image();
+      img.onload = function(){
+        var maxSide = 1600, s = Math.min(1, maxSide / Math.max(img.naturalWidth, img.naturalHeight));
+        var cv = document.createElement('canvas');
+        cv.width = Math.max(1, Math.round(img.naturalWidth * s));
+        cv.height = Math.max(1, Math.round(img.naturalHeight * s));
+        cv.getContext('2d').drawImage(img, 0, 0, cv.width, cv.height);
+        runOcr(cv);
+      };
+      img.onerror = function(){ ocrDone(); alert('图片读取失败，换一张试试'); };
+      img.src = rd.result;
+    };
+    rd.onerror = function(){ ocrDone(); alert('图片读取失败，换一张试试'); };
+    rd.readAsDataURL(file);
+  }
+  function runOcr(canvas){
+    var p = ocrWorker ? Promise.resolve(ocrWorker) :
+      Tesseract.createWorker('fra', 1, { logger: function(m){
+        var zh = OCR_ZH[m.status] || m.status || '';
+        btnOcr.textContent = zh + (m.status === 'recognizing text' && m.progress != null ? ' ' + Math.round(m.progress * 100) + '%' : '') + '…';
+      }}).then(function(w){ ocrWorker = w; return w; });
+    p.then(function(w){ return w.recognize(canvas); }).then(function(r){
+      var text = (r && r.data && r.data.text || '').trim();
+      ocrDone();
+      if(text){ src.value = text; render(); }
+      else { alert('没识别出文字，换张更清晰、拍正的照片试试'); }
+    }).catch(function(){ ocrDone(); alert('识别失败，多半是网络问题（字库没下下来），连 WiFi 后重试'); });
+  }
+  src.addEventListener('input', render);
+  rateInput.addEventListener('input', function(){ rateVal.textContent = rateInput.value; });
+
+  if(supported()){
+    speechSynthesis.onvoiceschanged = loadVoices;
+    loadVoices();
+  }
+  try{
+    var saved = localStorage.getItem(LS_KEY);
+    if(saved) src.value = saved;
+  }catch(e){}
+  render();
+})();
+</script>
+</body>
+</html>
