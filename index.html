@@ -51,7 +51,12 @@
       <button id="stopBtn" class="secondary">■ 停止</button>
       <button id="demoBtn" class="secondary">用照片那页试试</button>
     </div>
-    <div class="status" id="status">先点“用照片那页试试”，或上面选一个 PDF 文件。</div>
+    <div class="row" style="margin-top:12px">
+      <button id="shotBtn" style="font-size:18px;padding:14px 22px">📷 截图读这一页</button>
+      <input type="file" id="imgFile" accept="image/*" style="display:none">
+    </div>
+    <p class="hint" style="margin:8px 0 0"><b>孩子只做两步：</b>① 在电子书那页按 <b>Win+Shift+S</b>（Mac 是 Cmd+Shift+4）框住书页；② 回到这里按 <b>Ctrl+V</b> 粘贴，程序会自动识别并读出来。不用存文件、不用选文件。上面那个大按钮是直接选一张已存的截图。</p>
+    <div class="status" id="status">先点“用照片那页试试”，或上面选一个 PDF 文件，或截图后按 Ctrl+V。</div>
     <div id="ocrWarn"></div>
   </div>
 
@@ -237,20 +242,57 @@ document.getElementById('pasteBtn').onclick = function(){
   renderSentences();
   status(sentences.length ? ('已生成 ' + sentences.length + ' 句。') : '粘贴框里还没有可识别的句子。');
 };
+async function ensureTesseract(){
+  if (window.Tesseract) return;
+  await new Promise(function(res, rej){
+    var s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+    s.onload = res; s.onerror = rej; document.head.appendChild(s);
+  });
+}
+function tidyOcr(text){
+  return (text || '').replace(/\s+/g, ' ').replace(/-\s+/g, '').replace(/\s*[_\*]+\s*/g, ' ').trim();
+}
+async function ocrImageSrc(src, autoRead){
+  status('正在识别截图（法语），请稍等…');
+  try {
+    await ensureTesseract();
+    var r = await Tesseract.recognize(src, 'fra');
+    var text = tidyOcr(r.data.text);
+    sentences = splitSentences(text).filter(function(s){ return s.replace(/[^A-Za-zÀ-ÿ]/g, '').length >= 3; });
+    renderSentences();
+    if (sentences.length) {
+      status('识别出 ' + sentences.length + ' 句，正在读给你听。点一句可重听，点词只读那个词。');
+      if (autoRead) setTimeout(speakAll, 400);
+    } else {
+      status('没识别出文字：截图可能太小、太模糊，或框住了太多图。请把书页放大一点再截一次，只框文字那部分。');
+    }
+  } catch (e) { status('识别失败，请检查网络后重试。'); }
+}
+document.getElementById('shotBtn').onclick = function(){ document.getElementById('imgFile').click(); };
+document.getElementById('imgFile').addEventListener('change', function(e){
+  var f = e.target.files[0];
+  if (!f) return;
+  ocrImageSrc(URL.createObjectURL(f), true);
+});
+document.addEventListener('paste', function(e){
+  var items = (e.clipboardData || window.clipboardData || {}).items || [];
+  for (var i = 0; i < items.length; i++) {
+    if (items[i].type.indexOf('image') === 0) {
+      var f = items[i].getAsFile();
+      if (f) { ocrImageSrc(URL.createObjectURL(f), true); e.preventDefault(); }
+      return;
+    }
+  }
+});
 document.getElementById('ocrBtn').onclick = async function(){
   if (!pdfDoc) return;
   status('正在对本页做 OCR（法语），请稍等…');
   try {
-    if (!window.Tesseract) {
-      await new Promise(function(res, rej){
-        var s = document.createElement('script');
-        s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
-        s.onload = res; s.onerror = rej; document.head.appendChild(s);
-      });
-    }
+    await ensureTesseract();
     var canvas = document.getElementById('pdfCanvas');
     var r = await Tesseract.recognize(canvas.toDataURL('image/png'), 'fra');
-    var text = (r.data.text || '').replace(/\s+/g, ' ').trim();
+    var text = tidyOcr(r.data.text);
     sentences = splitSentences(text);
     renderSentences();
     status(sentences.length ? ('OCR 识别出 ' + sentences.length + ' 句，请先核对文字对不对再跟读。') : 'OCR 没识别出文字，这页可能太模糊或字太小。');
