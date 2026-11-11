@@ -23,13 +23,13 @@ button{border:0;border-radius:999px;padding:12px 20px;font-size:15px;background:
 button.secondary{background:#fff;color:#8a6d3b;border:1px solid #e0cfae;width:auto;padding:7px 13px;font-size:13px;margin:6px 6px 0 0}
 button.ghost{background:#fff;color:#8a6d3b;border:1px solid #e0cfae;font-size:13px;padding:6px 12px;margin-top:6px}
 .sent{border:1px solid #e8dcc8;background:#fff;border-radius:10px;padding:10px;margin-top:8px;font-size:16px;line-height:1.6}
-.sent.fr{font-size:16px}
-.sent.zh{font-size:13px;color:#7a6a58;margin-top:4px}
+.sent .fr{font-size:16px}
+.sent .zh{font-size:13px;color:#7a6a58;margin-top:4px}
 .goal{display:flex;gap:8px;align-items:flex-start;border:1px solid #e8dcc8;background:#fff;border-radius:10px;padding:10px;margin-top:8px}
 .goal input[type=checkbox]{margin-top:4px;transform:scale(1.3)}
-.goal.gt{flex:1;font-size:14px;line-height:1.6}
-.goal.gt.tag{display:inline-block;font-size:11px;background:#e8a04c;color:#fff;border-radius:999px;padding:1px 8px;margin-right:6px}
-.goal.del{border:0;background:none;color:#b08a5a;font-size:18px;cursor:pointer;padding:0 4px}
+.goal .gt{flex:1;font-size:14px;line-height:1.6}
+.goal .gt .tag{display:inline-block;font-size:11px;background:#e8a04c;color:#fff;border-radius:999px;padding:1px 8px;margin-right:6px}
+.goal .del{border:0;background:none;color:#b08a5a;font-size:18px;cursor:pointer;padding:0 4px}
 .dim{font-size:13px;color:#7a6a58;margin-top:14px;font-weight:bold}
 .status{font-size:13px;color:#7a6a58;margin-top:10px;line-height:1.6}
 .addrow{display:flex;gap:6px;margin-top:8px}
@@ -43,30 +43,32 @@ button.ghost{background:#fff;color:#8a6d3b;border:1px solid #e0cfae;font-size:13
 .bigbtn{border:0;border-radius:999px;padding:12px 20px;font-size:15px;background:#e8a04c;color:#fff;cursor:pointer;width:100%;margin-top:10px}
 .bigbtn.stop{background:#b08954}
 .group{margin-top:16px}
-.group h2{font-size:15px;margin:0 0 4px}
-.group.hint{font-size:12px;color:#9a8a76;margin:0 0 8px;line-height:1.5}
+.group h2{font-size:15px;margin:0 0 4px;cursor:pointer;user-select:none}
+.group h2 .arrow{display:inline-block;width:18px;color:#e8a04c}
+.group.collapsed .hint,.group.collapsed .words{display:none}
+.group .hint{font-size:12px;color:#9a8a76;margin:0 0 8px;line-height:1.5}
 .words{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .word{border:1px solid #e8dcc8;background:#fff;border-radius:12px;padding:12px 10px;cursor:pointer;text-align:center;position:relative}
 .word.playing{border-color:#e8a04c;box-shadow:0 0 0 2px #f3d9ae}
-.word.fr{font-size:19px;font-weight:bold}
-.word.zh{font-size:13px;color:#7a6a58;margin-top:4px}
-.word.spk{font-size:16px;margin-top:6px}
-.word.star{position:absolute;top:6px;right:8px;font-size:16px;color:#d8cbb2;background:none;border:0;cursor:pointer;padding:2px}
-.word.star.on{color:#e8a04c}
+.word .fr{font-size:19px;font-weight:bold}
+.word .zh{font-size:13px;color:#7a6a58;margin-top:4px}
+.word .spk{font-size:16px;margin-top:6px}
+.word .star{position:absolute;top:6px;right:8px;font-size:16px;color:#d8cbb2;background:none;border:0;cursor:pointer;padding:2px}
+.word .star.on{color:#e8a04c}
 .word.learned{opacity:.75}
-.word.learned.fr::after{content:" ✓";color:#7a9a5a;font-size:15px}
+.word.learned .fr::after{content:" ✓";color:#7a9a5a;font-size:15px}
 .progress{font-size:13px;color:#7a6a58;margin-top:12px;text-align:center}
 .note{font-size:12px;color:#9a8a76;line-height:1.6;margin-top:10px}
 .empty{font-size:14px;color:#7a6a58;line-height:1.8;text-align:center;padding:28px 10px}
 .readcard{border:1px solid #e8dcc8;background:#fff;border-radius:12px;padding:12px;margin-top:10px}
-.readcard.fr{font-size:18px;line-height:1.7}
-.readcard.fr.w{cursor:pointer;border-radius:6px;padding:1px 3px}
-.readcard.fr.w:hover{background:#f3e2c2}
-.readcard.zh{font-size:13px;color:#7a6a58;margin-top:6px}
-.readcard.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-.readcard.row button{margin-top:0;padding:9px 14px;font-size:14px}
-.readcard.row button.rec{background:#c96f4a}
-.readcard.row button.rec.recording{background:#a33d2a}
+.readcard .fr{font-size:18px;line-height:1.7}
+.readcard .fr .w{cursor:pointer;border-radius:6px;padding:1px 3px}
+.readcard .fr .w:hover{background:#f3e2c2}
+.readcard .zh{font-size:13px;color:#7a6a58;margin-top:6px}
+.readcard .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.readcard .row button{margin-top:0;padding:9px 14px;font-size:14px}
+.readcard .row button.rec{background:#c96f4a}
+.readcard .row button.rec.recording{background:#a33d2a}
 .readcard audio{width:100%;margin-top:10px}
 .ratebtns{display:flex;gap:8px;margin-top:10px}
 .ratebtns button{flex:1;margin-top:0;padding:9px 4px;font-size:13px;background:#fff;color:#8a6d3b;border:1px solid #e0cfae}
@@ -125,7 +127,10 @@ Je m'étire.</textarea>
 <button id="demo2" class="secondary">用示例 2：Il est au magasin</button>
 <button id="uploadBtn" class="secondary">📄 上传.txt 课文</button>
 <input type="file" id="fileInput" accept=".txt" style="display:none">
+<button id="ocrBtn" class="secondary">📷 拍照/选图识别课文</button>
+<input type="file" id="ocrInput" accept="image/*" style="display:none">
 </div>
+<p class="note" style="margin-top:8px">拍照识别只认印刷体，手写认不出来；拍得越正、越亮越准。识别完先检查一下有没有认错的字，再点“整理课文”。</p>
 <button id="parseBtn">✨ 整理课文，列出学习目标</button>
 <div class="status" id="status">还没整理。先粘贴课文，再点上面这个按钮。</div>
 </div>
@@ -177,6 +182,10 @@ Je m'étire.</textarea>
 <div class="tabs">
 <button id="tabTheme" class="active">按主题</button>
 <button id="tabSound">按发音</button>
+</div>
+<div>
+<button id="expandAllBtn" class="ghost">▾ 全部展开</button>
+<button id="collapseAllBtn" class="ghost">▸ 全部收起</button>
 </div>
 <div class="controls">
 <input type="text" id="search" placeholder="搜词：输入法语或中文，比如 chat / 猫">
@@ -433,6 +442,7 @@ var LEARNED_KEY = 'french-vocab-learned';
 var learned = {};
 try { learned = JSON.parse(localStorage.getItem(LEARNED_KEY) || '{}');} catch(e){}
 var vocabMode = 'theme';
+var collapsedGroups = {};
 var playingAll = false;
 var currentCard = null;
 
@@ -501,11 +511,21 @@ function renderVocab(){
 var q = document.getElementById('search').value.trim().toLowerCase();
 var box = document.getElementById('vocabList'); box.innerHTML = '';
 var src = vocabMode === 'theme'? THEMES: SOUNDS;
-src.forEach(function(g){
+src.forEach(function(g, gi){
 var words = g.words.filter(function(w){ return!q || w[0].toLowerCase().indexOf(q)!== -1 || w[1].indexOf(q)!== -1;});
 if (!words.length) return;
-var gd = document.createElement('div'); gd.className = 'group';
-var h = document.createElement('h2'); h.textContent = g.title; gd.appendChild(h);
+var key = vocabMode + '|' + g.title;
+var collapsed = q ? false : (collapsedGroups[key] !== undefined ? collapsedGroups[key] : gi !== 0);
+var gd = document.createElement('div'); gd.className = 'group' + (collapsed ? ' collapsed' : '');
+var h = document.createElement('h2');
+var arrow = document.createElement('span'); arrow.className = 'arrow'; arrow.textContent = collapsed ? '▸' : '▾';
+h.appendChild(arrow); h.appendChild(document.createTextNode(g.title + '（' + words.length + ' 个词）'));
+h.addEventListener('click', function(){
+collapsedGroups[key] = !gd.classList.contains('collapsed');
+gd.classList.toggle('collapsed');
+arrow.textContent = gd.classList.contains('collapsed') ? '▸' : '▾';
+});
+gd.appendChild(h);
 if (g.hint) { var hi = document.createElement('p'); hi.className = 'hint'; hi.textContent = g.hint; gd.appendChild(hi);}
 var grid = document.createElement('div'); grid.className = 'words';
 words.forEach(function(w){ grid.appendChild(makeWordCard(w, w[1]));});
@@ -550,15 +570,25 @@ document.getElementById('tabSound').classList.add('active');
 document.getElementById('tabTheme').classList.remove('active');
 renderVocab();
 });
+document.getElementById('expandAllBtn').addEventListener('click', function(){
+var src = vocabMode === 'theme' ? THEMES : SOUNDS;
+src.forEach(function(g){ collapsedGroups[vocabMode + '|' + g.title] = false; });
+renderVocab();
+});
+document.getElementById('collapseAllBtn').addEventListener('click', function(){
+var src = vocabMode === 'theme' ? THEMES : SOUNDS;
+src.forEach(function(g){ collapsedGroups[vocabMode + '|' + g.title] = true; });
+renderVocab();
+});
 document.getElementById('search').addEventListener('input', renderVocab);
 document.getElementById('rate').addEventListener('input', function(){
 document.getElementById('rateVal').textContent = this.value;
 });
 document.getElementById('playAll').addEventListener('click', function(){
-playCards(Array.prototype.slice.call(document.querySelectorAll('#vocabList.word')), this);
+playCards(Array.prototype.slice.call(document.querySelectorAll('#vocabList .word')).filter(function(c){ return c.offsetParent !== null; }), this);
 });
 document.getElementById('playLessonWords').addEventListener('click', function(){
-playCards(Array.prototype.slice.call(document.querySelectorAll('#lessonWords.word')), this);
+playCards(Array.prototype.slice.call(document.querySelectorAll('#lessonWords .word')), this);
 });
 if ('speechSynthesis' in window) speechSynthesis.getVoices();
 renderVocab();
@@ -978,6 +1008,36 @@ function renderDiagnosis(){
   });
 }
 document.getElementById('refreshDiagBtn').addEventListener('click', function(){ renderDiagnosis(); });
+
+/* ============ 拍照识别课文（Tesseract.js 法语 OCR） ============ */
+function loadTesseract(){
+  return new Promise(function(resolve, reject){
+    if (window.Tesseract) return resolve();
+    var s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+    s.onload = resolve;
+    s.onerror = function(){ reject(new Error('识别库加载失败')); };
+    document.head.appendChild(s);
+  });
+}
+document.getElementById('ocrBtn').addEventListener('click', function(){ document.getElementById('ocrInput').click(); });
+document.getElementById('ocrInput').addEventListener('change', async function(e){
+  var f = e.target.files[0]; if (!f) return;
+  status('正在识别照片里的法语…第一次要联网下载识别库，请稍等。');
+  try {
+    await loadTesseract();
+    var worker = await Tesseract.createWorker('fra');
+    var ret = await worker.recognize(f);
+    await worker.terminate();
+    var text = (ret.data.text || '').trim();
+    if (!text) { status('没识别出文字：请拍得更清楚一点，只认印刷体，手写认不出来。'); return; }
+    document.getElementById('lessonText').value = text;
+    status('识别完成，已填到课文框里。请检查一下有没有认错的字，再点“整理课文”。');
+  } catch(err) {
+    status('识别失败：' + (err && err.message ? err.message : '请检查网络后重试。') + '（识别要联网加载识别库）');
+  }
+  e.target.value = '';
+});
 
 /* ============ 打开时恢复上次的课文 ============ */
 (function restoreLesson(){
