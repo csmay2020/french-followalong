@@ -3,305 +3,994 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PDF 跟读 · 原型</title>
+<title>法语学习 · P1：课文 + 目标 + 生词 + 朗读跟读</title>
 <style>
-  body{margin:0;background:#f3ede3;color:#3a3128;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
-  .wrap{max-width:860px;margin:0 auto;padding:18px 14px 40px}
-  h1{font-size:22px;margin:6px 0 4px}
-  .sub{color:#7a6a58;font-size:14px;line-height:1.6}
-  .card{background:#fffaf2;border:1px solid #e8dcc8;border-radius:14px;padding:14px;margin-top:12px}
-  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-  button{border:0;border-radius:999px;padding:10px 16px;font-size:15px;background:#e8a04c;color:#fff;cursor:pointer}
-  button.secondary{background:#fff;color:#8a6d3b;border:1px solid #e0cfae}
-  button:disabled{opacity:.5;cursor:default}
-  input[type=file]{font-size:14px}
-  label{font-size:14px;color:#7a6a58}
-  input[type=range]{width:150px}
-  canvas{width:100%;height:auto;border:1px solid #e8dcc8;border-radius:10px;background:#fff}
-  .sent{border:1px solid #e8dcc8;background:#fff;border-radius:12px;padding:12px 14px;margin-top:10px;cursor:pointer}
-  .sent.active{border-color:#e8a04c;background:#fff3df}
-  .sent .fr{font-size:20px;line-height:1.6}
-  .sent .fr .w{cursor:pointer;border-radius:6px;padding:1px 2px}
-  .sent .fr .w:hover{background:#ffe9c4}
-  .sent .zh{font-size:14px;color:#7a6a58;margin-top:6px;display:none}
-  .sent .zh.show{display:block}
-  .sent .tools{margin-top:8px;display:flex;gap:8px}
-  .sent .tools button{padding:6px 12px;font-size:13px}
-  .hint{font-size:13px;color:#8a7a64;line-height:1.7}
-  .status{font-size:14px;color:#7a6a58;margin-top:8px}
-  .warn{background:#fff3df;border:1px solid #f0c98a;border-radius:10px;padding:10px 12px;font-size:14px;line-height:1.6;margin-top:10px}
+body{margin:0;background:#f3ede3;color:#3a3128;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif}
+.wrap{max-width:720px;margin:0 auto;padding:18px 14px 40px}
+h1{font-size:20px;margin:4px 0}
+.sub{font-size:13px;color:#7a6a58;line-height:1.6;margin:0 0 12px}
+.nav{position:sticky;top:0;z-index:10;display:flex;gap:6px;background:#f3ede3;padding:10px 0 8px}
+.nav button{flex:1;border:1px solid #e0cfae;background:#fffaf2;color:#8a6d3b;border-radius:12px;padding:12px 2px;font-size:14px;cursor:pointer}
+.nav button.active{background:#e8a04c;color:#fff;border-color:#e8a04c;font-weight:bold}
+.panel{display:none}
+.panel.active{display:block}
+.card{background:#fffaf2;border:1px solid #e8dcc8;border-radius:14px;padding:14px;margin-top:12px}
+.card h2{font-size:16px;margin:0 0 8px}
+label{font-size:13px;color:#7a6a58;display:block;margin:8px 0 4px}
+input[type=text],textarea{width:100%;box-sizing:border-box;padding:10px;border:1px solid #e0cfae;border-radius:10px;background:#fff;color:#3a3128;font-size:15px;font-family:inherit}
+textarea{min-height:90px;line-height:1.6}
+button{border:0;border-radius:999px;padding:12px 20px;font-size:15px;background:#e8a04c;color:#fff;cursor:pointer;margin-top:10px}
+button.secondary{background:#fff;color:#8a6d3b;border:1px solid #e0cfae;width:auto;padding:7px 13px;font-size:13px;margin:6px 6px 0 0}
+button.ghost{background:#fff;color:#8a6d3b;border:1px solid #e0cfae;font-size:13px;padding:6px 12px;margin-top:6px}
+.sent{border:1px solid #e8dcc8;background:#fff;border-radius:10px;padding:10px;margin-top:8px;font-size:16px;line-height:1.6}
+.sent.fr{font-size:16px}
+.sent.zh{font-size:13px;color:#7a6a58;margin-top:4px}
+.goal{display:flex;gap:8px;align-items:flex-start;border:1px solid #e8dcc8;background:#fff;border-radius:10px;padding:10px;margin-top:8px}
+.goal input[type=checkbox]{margin-top:4px;transform:scale(1.3)}
+.goal.gt{flex:1;font-size:14px;line-height:1.6}
+.goal.gt.tag{display:inline-block;font-size:11px;background:#e8a04c;color:#fff;border-radius:999px;padding:1px 8px;margin-right:6px}
+.goal.del{border:0;background:none;color:#b08a5a;font-size:18px;cursor:pointer;padding:0 4px}
+.dim{font-size:13px;color:#7a6a58;margin-top:14px;font-weight:bold}
+.status{font-size:13px;color:#7a6a58;margin-top:10px;line-height:1.6}
+.addrow{display:flex;gap:6px;margin-top:8px}
+.addrow input{flex:1}
+.tabs{display:flex;gap:8px;margin-top:4px}
+.tabs button{flex:1;border:1px solid #e0cfae;background:#fff;color:#8a6d3b;border-radius:999px;padding:10px;font-size:14px;cursor:pointer;margin-top:0}
+.tabs button.active{background:#e8a04c;color:#fff;border-color:#e8a04c}
+.controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px}
+.controls input[type=range]{flex:1;min-width:120px}
+.controls input[type=text]{flex:2;min-width:140px;padding:9px;border:1px solid #e0cfae;border-radius:10px;background:#fff;font-size:14px;color:#3a3128}
+.bigbtn{border:0;border-radius:999px;padding:12px 20px;font-size:15px;background:#e8a04c;color:#fff;cursor:pointer;width:100%;margin-top:10px}
+.bigbtn.stop{background:#b08954}
+.group{margin-top:16px}
+.group h2{font-size:15px;margin:0 0 4px}
+.group.hint{font-size:12px;color:#9a8a76;margin:0 0 8px;line-height:1.5}
+.words{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.word{border:1px solid #e8dcc8;background:#fff;border-radius:12px;padding:12px 10px;cursor:pointer;text-align:center;position:relative}
+.word.playing{border-color:#e8a04c;box-shadow:0 0 0 2px #f3d9ae}
+.word.fr{font-size:19px;font-weight:bold}
+.word.zh{font-size:13px;color:#7a6a58;margin-top:4px}
+.word.spk{font-size:16px;margin-top:6px}
+.word.star{position:absolute;top:6px;right:8px;font-size:16px;color:#d8cbb2;background:none;border:0;cursor:pointer;padding:2px}
+.word.star.on{color:#e8a04c}
+.word.learned{opacity:.75}
+.word.learned.fr::after{content:" ✓";color:#7a9a5a;font-size:15px}
+.progress{font-size:13px;color:#7a6a58;margin-top:12px;text-align:center}
+.note{font-size:12px;color:#9a8a76;line-height:1.6;margin-top:10px}
+.empty{font-size:14px;color:#7a6a58;line-height:1.8;text-align:center;padding:28px 10px}
+.readcard{border:1px solid #e8dcc8;background:#fff;border-radius:12px;padding:12px;margin-top:10px}
+.readcard.fr{font-size:18px;line-height:1.7}
+.readcard.fr.w{cursor:pointer;border-radius:6px;padding:1px 3px}
+.readcard.fr.w:hover{background:#f3e2c2}
+.readcard.zh{font-size:13px;color:#7a6a58;margin-top:6px}
+.readcard.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.readcard.row button{margin-top:0;padding:9px 14px;font-size:14px}
+.readcard.row button.rec{background:#c96f4a}
+.readcard.row button.rec.recording{background:#a33d2a}
+.readcard audio{width:100%;margin-top:10px}
+.ratebtns{display:flex;gap:8px;margin-top:10px}
+.ratebtns button{flex:1;margin-top:0;padding:9px 4px;font-size:13px;background:#fff;color:#8a6d3b;border:1px solid #e0cfae}
+.ratebtns button.on{background:#e8a04c;color:#fff;border-color:#e8a04c}
+.ratebtns button.good.on{background:#7a9a5a;border-color:#7a9a5a}
+.ratebtns button.bad.on{background:#c96f4a;border-color:#c96f4a}
+.quizq{border:1px solid #e8dcc8;background:#fff;border-radius:12px;padding:12px;margin-top:10px}
+.quizq .q{font-size:16px;line-height:1.7}
+.quizq .q .fr{font-weight:bold}
+.quizq .opts{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}
+.quizq .opts button{margin-top:0;padding:11px 12px;font-size:14px;background:#fff;color:#3a3128;border:1px solid #e0cfae;text-align:left}
+.quizq .opts button.correct{background:#e6efdc;border-color:#7a9a5a}
+.quizq .opts button.wrong{background:#f6ddd2;border-color:#c96f4a}
+.quizq .opts button:disabled{opacity:.85;cursor:default}
+.quizq .fb{font-size:13px;margin-top:8px;color:#7a6a58;line-height:1.6}
+.diagsec{margin-top:14px}
+.diagsec h3{font-size:15px;margin:0 0 6px}
+.badge{display:inline-block;font-size:11px;border-radius:999px;padding:2px 9px;margin-left:6px;color:#fff}
+.badge.mastered{background:#7a9a5a}
+.badge.partial{background:#e8a04c}
+.badge.weak{background:#c96f4a}
+.badge.nodata{background:#b0a892}
+.tutor{border:1px solid #e8dcc8;background:#fff;border-radius:12px;padding:12px;margin-top:10px}
+.tutor .t{font-size:16px;font-weight:bold}
+.tutor .hint{font-size:14px;color:#7a6a58;line-height:1.7;margin-top:6px}
+.tutor .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.tutor .row button{margin-top:0;padding:9px 14px;font-size:14px}
+.tutor .ans{font-size:15px;line-height:1.7;margin-top:10px;background:#f3ede3;border-radius:10px;padding:10px}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>📖 PDF 跟读 · 原型</h1>
-  <p class="sub">给电脑上的法语电子书用。关键改动：<b>不再先拍照再 OCR</b>，而是直接读 PDF 文件里自带的文字层 —— 电子书大多是文字版 PDF，取文字几乎 100% 准，比对着屏幕拍照识别准得多。文件只在你这台电脑的浏览器里处理，不上传。</p>
+<h1>📖 法语学习 · P1</h1>
+<p class="sub">顶部导航切换：📖 课文 → 🎯 学习目标 → 👂 生词听一听 → 🎙️ 朗读跟读 → 📝 理解检查 → 🔍 诊断辅导。课文存到这台设备上，刷新后还在。第 2 周的朗读评估先用录音回放 + 自评顶着，自动打分要等 Azure Key。</p>
 
-  <div class="card">
-    <div class="row">
-      <input type="file" id="pdfFile" accept="application/pdf">
-      <button id="prevBtn" disabled>← 上一页</button>
-      <button id="nextBtn" disabled>下一页 →</button>
-      <span id="pageInfo">未打开 PDF</span>
-    </div>
-    <div class="row" style="margin-top:10px">
-      <label>语速 <span id="rateVal">0.8</span></label>
-      <input type="range" id="rate" min="0.6" max="1.2" step="0.1" value="0.8">
-      <button id="playAllBtn">▶ 整页跟读</button>
-      <button id="stopBtn" class="secondary">■ 停止</button>
-      <button id="demoBtn" class="secondary">用照片那页试试</button>
-    </div>
-    <div class="row" style="margin-top:12px">
-      <button id="shotBtn" style="font-size:18px;padding:14px 22px">📷 截图读这一页</button>
-      <input type="file" id="imgFile" accept="image/*" style="display:none">
-    </div>
-    <p class="hint" style="margin:8px 0 0"><b>孩子只做两步：</b>① 在电子书那页按 <b>Win+Shift+S</b>（Mac 是 Cmd+Shift+4）框住书页；② 回到这里按 <b>Ctrl+V</b> 粘贴，程序会自动识别并读出来。不用存文件、不用选文件。上面那个大按钮是直接选一张已存的截图。</p>
-    <div class="status" id="status">先点“用照片那页试试”，或上面选一个 PDF 文件，或截图后按 Ctrl+V。</div>
-    <div id="ocrWarn"></div>
-  </div>
-
-  <div class="card">
-    <canvas id="pdfCanvas"></canvas>
-    <p class="hint">点下面任意一句就读那句；点句里的任意一个词就只读那个词；点“译”看中文。孩子跟读时，先听整句，再一句一句跟。</p>
-    <div id="sentences"></div>
-  </div>
-
-  <div class="card">
-    <p class="hint"><b>如果打开后一句文字都取不到：</b>说明这本 PDF 是扫描版（整页就是一张图，没有文字层），这时才需要 OCR。点下面“对本页做 OCR”——它是对电脑里渲染出来的高清页面做识别，比手机拍屏幕准得多，但仍可能有错，识别完请先核对一句再让孩子跟读。</p>
-    <button id="ocrBtn" class="secondary" disabled>对本页做 OCR（仅扫描版 PDF 需要）</button>
-    <p class="hint">粘贴文字也能用：把课文粘到下面，点“生成句子”即可跟读。</p>
-    <textarea id="pasteBox" rows="3" style="width:100%;border:1px solid #e8dcc8;border-radius:10px;padding:10px;font-size:15px" placeholder="粘贴法语课文，例如：C'est l'étang. Je vais à l'étang."></textarea>
-    <div class="row" style="margin-top:8px"><button id="pasteBtn" class="secondary">生成句子</button></div>
-  </div>
+<div class="nav">
+<button id="navLesson" class="active">📖 课文</button>
+<button id="navGoals">🎯 学习目标</button>
+<button id="navVocab">👂 生词</button>
+<button id="navRead">🎙️ 朗读跟读</button>
+<button id="navQuiz">📝 理解检查</button>
+<button id="navDiagnosis">🔍 诊断辅导</button>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<!-- 课文 -->
+<div class="panel active" id="panel-lesson">
+<div class="card">
+<h2>导入课文</h2>
+<label>课文名字（比如：Escalire B10 第 2 页）</label>
+<input type="text" id="lessonName" value="Escalire B10 · Regarde-moi" placeholder="给这次学习起个名字">
+<label>课文内容（粘贴法语课文）</label>
+<textarea id="lessonText">Regarde-moi.
+Je m'étire.</textarea>
+<div>
+<button id="demo1" class="secondary">用示例 1：Regarde-moi</button>
+<button id="demo2" class="secondary">用示例 2：Il est au magasin</button>
+<button id="uploadBtn" class="secondary">📄 上传.txt 课文</button>
+<input type="file" id="fileInput" accept=".txt" style="display:none">
+</div>
+<button id="parseBtn">✨ 整理课文，列出学习目标</button>
+<div class="status" id="status">还没整理。先粘贴课文，再点上面这个按钮。</div>
+</div>
+
+<div class="card" id="sentCard" style="display:none">
+<h2>课文句子</h2>
+<div id="sentences"></div>
+</div>
+</div>
+
+<!-- 学习目标 -->
+<div class="panel" id="panel-goals">
+<div class="card" id="goalCard">
+<h2>本次学习目标 <span id="goalCount" style="font-size:13px;color:#7a6a58"></span></h2>
+<p class="sub" style="margin:0">打勾的是这次要学的；点 × 删掉不合适的；下面可以自己加。改完点“保存目标”，下次打开这页还在。</p>
+<div id="goals"><p class="empty">还没导入课文。<br>先去「📖 课文」里粘贴一篇课文，点“整理课文”，目标会自动列在这里。</p></div>
+<div class="addrow">
+<input type="text" id="newGoalText" placeholder="自己加一条目标，比如：能说出 magasin 是什么意思">
+<select id="newGoalDim" style="border:1px solid #e0cfae;border-radius:10px;background:#fff;padding:8px">
+<option value="A">朗读</option>
+<option value="B">词汇理解</option>
+<option value="C">阅读理解</option>
+<option value="D">独立运用</option>
+</select>
+<button id="addGoalBtn" class="ghost">＋ 加目标</button>
+</div>
+<button id="saveBtn">💾 保存目标</button>
+<button id="copyBtn" class="secondary" style="background:#fff">📋 复制目标清单</button>
+<div class="status" id="saveStatus"></div>
+</div>
+
+<div class="card">
+<h2>下一步</h2>
+<p class="sub">第 1 周到这里就完成了。去「🎙️ 朗读跟读」里把每句读一遍、录下来听听。第 3 周是词汇和句子理解检查。</p>
+</div>
+</div>
+
+<!-- 生词听一听 -->
+<div class="panel" id="panel-vocab">
+<div class="card">
+<h2>生词听一听</h2>
+<p class="sub" style="margin:0 0 8px">先听、再跟读。点一下词卡就读出来；⭐ 表示“这个词我会了”，存在这台设备上。</p>
+<div id="lessonWordsBox" style="display:none">
+<div class="dim" style="margin-top:4px">本课生词（从上面这篇课文里找出来的）</div>
+<div class="words" id="lessonWords" style="margin-top:8px"></div>
+<button class="bigbtn" id="playLessonWords">🔊 本课生词读一遍</button>
+</div>
+<div class="dim" style="margin-top:16px">词库（200 多个词，随便练）</div>
+<div class="tabs">
+<button id="tabTheme" class="active">按主题</button>
+<button id="tabSound">按发音</button>
+</div>
+<div class="controls">
+<input type="text" id="search" placeholder="搜词：输入法语或中文，比如 chat / 猫">
+<label style="font-size:13px;color:#7a6a58">语速</label>
+<input type="range" id="rate" min="0.5" max="1" step="0.1" value="0.7">
+<span id="rateVal" style="font-size:13px;color:#7a6a58">0.7</span>
+</div>
+<button class="bigbtn" id="playAll">🔊 词库全部读一遍</button>
+<div class="progress" id="progress"></div>
+<div id="vocabList"></div>
+<p class="note">发音用这台设备自带的法语语音，不用联网、不用 Key。句子和生词的中文翻译走 Google 免费接口，需要联网。如果点一下没声音，先检查这台设备有没有装法语语音（iPad：设置 → 辅助功能 → 朗读内容 → 声音 → 法语）。</p>
+</div>
+</div>
+
+<!-- 朗读跟读 -->
+<div class="panel" id="panel-read">
+<div class="card">
+<h2>🎙️ 朗读跟读</h2>
+<p class="sub" style="margin:0">一句一句来：先听示范，再点录音读一遍，然后听听自己的录音，最后给自己评一下：读得顺 / 有点卡 / 不会读。点句子里的单词可以单独听它的发音。第一次点录音时，浏览器会问能不能用麦克风，点“允许”。</p>
+<div class="progress" id="readProgress"></div>
+<div id="readList"><p class="empty">还没导入课文。<br>先去「📖 课文」里粘贴一篇课文，点“整理课文”，句子会出现在这里。</p></div>
+<p class="note">录音只存在这次打开的页面里，关掉页面就没了；自评结果会保存，下次打开还在。自动打分（哪个词读错了）要等 Azure Key，现在先用录音回放 + 自评顶着。</p>
+</div>
+</div>
+
+<!-- 理解检查 -->
+<div class="panel" id="panel-quiz">
+<div class="card">
+<h2>📝 理解检查</h2>
+<p class="sub" style="margin:0">三种小题，点一下就有对错：<b>词义</b>——这个法语词是什么意思；<b>句义</b>——这句话是什么意思；<b>听音选词</b>——听到的是哪个词。答错的会记下来，最下面可以只重练错题。</p>
+<div class="progress" id="quizProgress"></div>
+<div class="progress" id="quizLast"></div>
+<button class="bigbtn" id="startQuizBtn">▶ 开始检查</button>
+<button class="bigbtn" id="retryWrongBtn" style="display:none;background:#fff;color:#8a6d3b;border:1px solid #e0cfae">🔁 只重练错题</button>
+<div id="quizList"></div>
+</div>
+</div>
+
+<!-- 诊断辅导 -->
+<div class="panel" id="panel-diagnosis">
+<div class="card">
+<h2>🔍 诊断辅导</h2>
+<p class="sub" style="margin:0">根据朗读自评、理解检查和生词星标，算出每个词、每句话的掌握程度。辅导先给提示、不直接给答案：先听、再想，实在想不起来再看答案。</p>
+<button class="bigbtn" id="refreshDiagBtn">🔄 重新算一遍诊断</button>
+<div id="diagSummary"></div>
+<div id="diagList"></div>
+</div>
+</div>
+
+<p class="note">目标、自评和“会了”的星标只存在这台设备的浏览器里，不上传。</p>
+</div>
 <script>
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+/* ============ 顶部导航栏 ============ */
+function switchPanel(name){
+['lesson','goals','vocab','read','quiz','diagnosis'].forEach(function(n){
+document.getElementById('panel-' + n).classList.toggle('active', n === name);
+document.getElementById('nav' + n.charAt(0).toUpperCase() + n.slice(1)).classList.toggle('active', n === name);
+});
+if ('speechSynthesis' in window) speechSynthesis.cancel();
+window.scrollTo(0, 0);
+}
+document.getElementById('navLesson').addEventListener('click', function(){ switchPanel('lesson');});
+document.getElementById('navGoals').addEventListener('click', function(){ switchPanel('goals');});
+document.getElementById('navVocab').addEventListener('click', function(){ switchPanel('vocab');});
+document.getElementById('navRead').addEventListener('click', function(){ switchPanel('read');});
+document.getElementById('navQuiz').addEventListener('click', function(){ switchPanel('quiz'); showLastQuiz(); });
+document.getElementById('navDiagnosis').addEventListener('click', function(){ switchPanel('diagnosis'); renderDiagnosis(); });
 
+/* ============ 课文导入与学习目标（第 1 周） ============ */
+var FUNC = ['le','la','les','il','elle','ils','elles','nous','vous','je','tu','est','suis','es','sommes','êtes','sont','au','aux','dans','sur','sous','avec','pour','des','du','un','une','ce','cet','cette','ces','qui','que','où','quand','comment','voici','voilà','de','à','et','ne','pas','plus','moins','très','bien','moi','toi','lui','mon','ma','mes','ton','ta','tes','son','sa','ses','je','m','t','s','l','d','n','c','j'];
+var DIMS = {A:'朗读', B:'词汇理解', C:'阅读理解', D:'独立运用'};
 var sentences = [];
-var currentIdx = -1;
-var pdfDoc = null;
-var pageNum = 1;
-var speaking = false;
+var goals = [];
+var lessonKey = 'french-mvp-week1-goals';
+var lessonStoreKey = 'french-mvp-lesson';
 
-var demoSentences = ["C'est l'étang.", "Je vais à l'étang."];
-var demoZh = {"C'est l'étang.": "这是池塘。", "Je vais à l'étang.": "我要去池塘。"};
-
-function status(t){ document.getElementById('status').textContent = t; }
+function status(t){ document.getElementById('status').textContent = t;}
 function splitSentences(text){
-  var clean = text.replace(/\s+/g, ' ').replace(/-\s+/g, '').trim();
-  var m = clean.match(/[^.!?]+[.!?]+["'”)]?/g);
-  if (!m) return clean ? [clean] : [];
-  return m.map(function(s){ return s.trim(); }).filter(function(s){ return s.length > 1; });
+var clean = (text || '').replace(/\s+/g, ' ').trim();
+var m = clean.match(/[^.!?。！？]+[.!?。！？]+["'”)]?/g);
+if (!m) return clean? [clean]: [];
+return m.map(function(s){ return s.trim();}).filter(function(s){ return s.length > 1;});
+}
+function wordsOf(s){
+return (s.match(/[A-Za-zÀ-ÿ']+/g) || []).map(function(w){ return w.replace(/^['’]|['’]$/g, '');}).filter(Boolean);
+}
+function isPronFocus(w){
+var low = w.toLowerCase();
+return /(an|en|on|in|un|au|eau|ou|oi|ch|gn|ill)$/.test(low) || /^(an|en|on|in)/.test(low) || low.indexOf('tion')!== -1;
+}
+function extractKeyWords(){
+var seen = {}, keys = [];
+sentences.forEach(function(s){
+wordsOf(s).forEach(function(w){
+var low = w.toLowerCase();
+if (low.length < 4 || FUNC.indexOf(low)!== -1 || seen[low]) return;
+seen[low] = true; keys.push(w);
+});
+});
+return keys.slice(0, 12);
+}
+async function translateFr(text){
+try {
+var url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=fr&tl=zh-CN&dt=t&q=' + encodeURIComponent(text);
+var r = await fetch(url); var j = await r.json();
+return (j[0] || []).map(function(s){ return s[0];}).join('');
+} catch(e){ return '';}
 }
 function renderSentences(){
-  var box = document.getElementById('sentences');
-  box.innerHTML = '';
-  sentences.forEach(function(s, i){
-    var div = document.createElement('div');
-    div.className = 'sent' + (i === currentIdx ? ' active' : '');
-    var fr = document.createElement('div');
-    fr.className = 'fr';
-    s.split(/(\s+)/).forEach(function(part){
-      if (!part.trim()) { fr.appendChild(document.createTextNode(part)); return; }
-      var w = document.createElement('span');
-      w.className = 'w';
-      w.textContent = part;
-      w.onclick = function(e){ e.stopPropagation(); speakWord(part); };
-      fr.appendChild(w);
+var box = document.getElementById('sentences'); box.innerHTML = '';
+sentences.forEach(function(s){
+var d = document.createElement('div'); d.className = 'sent';
+d.innerHTML = '<div class="fr"></div><div class="zh">翻译中…</div>';
+d.querySelector('.fr').textContent = s;
+box.appendChild(d);
+translateFr(s).then(function(tr){ if (tr) d.querySelector('.zh').textContent = tr; else d.querySelector('.zh').textContent = '';});
+});
+}
+function renderGoals(){
+var box = document.getElementById('goals'); box.innerHTML = '';
+var counts = {A:0,B:0,C:0,D:0};
+goals.forEach(function(g){ if (g.on) counts[g.dim]++;});
+document.getElementById('goalCount').textContent = '（已选 ' + goals.filter(function(g){return g.on;}).length + ' 条）';
+['A','B','C','D'].forEach(function(dim){
+var list = goals.filter(function(g){ return g.dim === dim;});
+if (!list.length) return;
+var h = document.createElement('div'); h.className = 'dim'; h.textContent = DIMS[dim] + '（' + counts[dim] + ' 条）'; box.appendChild(h);
+list.forEach(function(g){
+var d = document.createElement('div'); d.className = 'goal';
+var cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked =!!g.on;
+cb.addEventListener('change', function(){ g.on = cb.checked; renderGoals();});
+var t = document.createElement('div'); t.className = 'gt';
+var tag = document.createElement('span'); tag.className = 'tag'; tag.textContent = DIMS[dim];
+t.appendChild(tag); t.appendChild(document.createTextNode(g.text));
+var del = document.createElement('button'); del.className = 'del'; del.textContent = '×';
+del.addEventListener('click', function(){ goals = goals.filter(function(x){ return x!== g;}); renderGoals();});
+d.appendChild(cb); d.appendChild(t); d.appendChild(del);
+box.appendChild(d);
+});
+});
+}
+function buildGoals(){
+goals = [];
+sentences.forEach(function(s){
+var focus = wordsOf(s).filter(isPronFocus);
+var t = '能流利读出：' + s + (focus.length? '（注意发音：' + focus.join('、') + '）': '');
+goals.push({dim:'A', text:t, on:true});
+});
+extractKeyWords().slice(0, 8).forEach(function(w){
+goals.push({dim:'B', text:'知道 ' + w + ' 是什么意思，能用它说一句话', on:true});
+});
+goals.push({dim:'C', text:'能说出这篇课文主要讲了什么', on:true});
+goals.push({dim:'C', text:'能回答：课文里的人物在做什么？', on:true});
+sentences.forEach(function(s){
+goals.push({dim:'C', text:'能说出这句的意思：' + s, on:true});
+});
+goals.push({dim:'D', text:'换一个新句子，也能读对、用对这篇课文里的重点词', on:true});
+goals.push({dim:'D', text:'换一个新场景，也能说出这篇课文里的主要内容', on:true});
+}
+function saveLesson(){
+try {
+localStorage.setItem(lessonStoreKey, JSON.stringify({name: document.getElementById('lessonName').value, text: document.getElementById('lessonText').value}));
+} catch(e){}
+}
+function applyParsedLesson(autoAdvance){
+var saved = null;
+try { saved = JSON.parse(localStorage.getItem(lessonKey) || 'null');} catch(e){}
+buildGoals();
+if (saved && saved.name === document.getElementById('lessonName').value) { goals = saved.goals;}
+document.getElementById('sentCard').style.display = 'block';
+renderSentences(); renderGoals(); renderLessonWords(); renderReadPanel();
+status('整理出 ' + sentences.length + ' 句，' + goals.length + ' 条学习目标。' + (autoAdvance? '正在跳到「学习目标」…': ''));
+if (autoAdvance) setTimeout(function(){ switchPanel('goals');}, 400);
+}
+document.getElementById('demo1').addEventListener('click', function(){
+document.getElementById('lessonName').value = 'Escalire B10 · Regarde-moi';
+document.getElementById('lessonText').value = "Regarde-moi.\nJe m'étire.";
+});
+document.getElementById('demo2').addEventListener('click', function(){
+document.getElementById('lessonName').value = 'Escalire B10 · Il est au magasin';
+document.getElementById('lessonText').value = 'Il est au magasin.\nRegarde les vêtements.';
+});
+document.getElementById('uploadBtn').addEventListener('click', function(){ document.getElementById('fileInput').click();});
+document.getElementById('fileInput').addEventListener('change', function(e){
+var f = e.target.files[0]; if (!f) return;
+var r = new FileReader();
+r.onload = function(){ document.getElementById('lessonText').value = r.result; status('已读入文件 ' + f.name + '，点“整理课文”继续。');};
+r.readAsText(f);
+});
+document.getElementById('parseBtn').addEventListener('click', function(){
+var text = document.getElementById('lessonText').value;
+sentences = splitSentences(text);
+if (!sentences.length) { status('没分出句子：请先粘贴课文。'); return;}
+saveLesson();
+applyParsedLesson(true);
+});
+document.getElementById('addGoalBtn').addEventListener('click', function(){
+var t = document.getElementById('newGoalText').value.trim();
+if (!t) return;
+goals.push({dim: document.getElementById('newGoalDim').value, text: t, on: true});
+document.getElementById('newGoalText').value = '';
+renderGoals();
+});
+document.getElementById('saveBtn').addEventListener('click', function(){
+try {
+localStorage.setItem(lessonKey, JSON.stringify({name: document.getElementById('lessonName').value, goals: goals}));
+document.getElementById('saveStatus').textContent = '已保存到这台设备，下次打开还在。';
+} catch(e){ document.getElementById('saveStatus').textContent = '保存失败：浏览器不允许存本地数据。';}
+});
+document.getElementById('copyBtn').addEventListener('click', function(){
+var lines = ['本次学习目标：' + document.getElementById('lessonName').value, ''];
+['A','B','C','D'].forEach(function(dim){
+var list = goals.filter(function(g){ return g.dim === dim && g.on;});
+if (!list.length) return;
+lines.push('');
+list.forEach(function(g){ lines.push('□ ' + g.text);});
+lines.push('');
+});
+var txt = lines.join('\n');
+if (navigator.clipboard) navigator.clipboard.writeText(txt).then(function(){ document.getElementById('saveStatus').textContent = '目标清单已复制。';});
+});
+
+/* ============ 生词听一听（已并入 P1） ============ */
+var THEMES = [
+{title:'👋 打招呼 · 礼貌', hint:'每天都会用到的词', words:[['bonjour','你好'],['salut','嗨'],['merci','谢谢'],["s'il te plaît",'请'],['au revoir','再见'],['oui','是'],['non','不是'],['bonsoir','晚上好']]},
+{title:'🔢 数字 1–20', hint:'11–20 是新加的', words:[['un','一'],['deux','二'],['trois','三'],['quatre','四'],['cinq','五'],['six','六'],['sept','七'],['huit','八'],['neuf','九'],['dix','十'],['onze','十一'],['douze','十二'],['treize','十三'],['quatorze','十四'],['quinze','十五'],['seize','十六'],['dix-sept','十七'],['dix-huit','十八'],['dix-neuf','十九'],['vingt','二十']]},
+{title:'🎨 颜色', hint:'', words:[['rouge','红色'],['bleu','蓝色'],['vert','绿色'],['jaune','黄色'],['orange','橙色'],['noir','黑色'],['blanc','白色'],['rose','粉色']]},
+{title:'👨‍👩‍👧 家庭 · 人', hint:'', words:[['maman','妈妈'],['papa','爸爸'],['frère','哥哥/弟弟'],['sœur','姐姐/妹妹'],['bébé','宝宝'],['famille','家庭'],['ami','朋友'],['enfant','孩子'],['grand-mère','奶奶/外婆'],['grand-père','爷爷/外公'],['cousin','表/堂兄弟'],['cousine','表/堂姐妹'],['oncle','叔叔/舅舅'],['tante','阿姨/姑姑'],['voisin','邻居']]},
+{title:'🐱 动物', hint:'', words:[['chat','猫'],['chien','狗'],['oiseau','鸟'],['poisson','鱼'],['lapin','兔子'],['lion','狮子'],['cheval','马'],['canard','鸭子'],['souris','老鼠'],['éléphant','大象'],['poule','母鸡'],['cochon','猪'],['vache','牛'],['mouton','羊'],['singe','猴子'],['serpent','蛇'],['grenouille','青蛙'],['papillon','蝴蝶']]},
+{title:'🧍 身体', hint:'', words:[['tête','头'],['main','手'],['pied','脚'],['œil','眼睛'],['nez','鼻子'],['bouche','嘴'],['oreille','耳朵'],['jambe','腿'],['bras','胳膊'],['dos','背'],['visage','脸'],['cheveux','头发'],['dents','牙齿'],['langue','舌头'],['doigt','手指'],['genou','膝盖'],['ventre','肚子'],['cœur','心']]},
+{title:'🍎 食物', hint:'', words:[['pain','面包'],['lait','牛奶'],['pomme','苹果'],['fromage','奶酪'],['chocolat','巧克力'],['banane','香蕉'],['orange','橙子'],['eau','水'],['jus','果汁'],['gâteau','蛋糕'],['riz','米饭'],['viande','肉'],['pomme de terre','土豆'],['carotte','胡萝卜'],['tomate','番茄'],['beurre','黄油'],['œuf','鸡蛋'],['glace','冰淇淋'],['bonbon','糖果'],['soupe','汤']]},
+{title:'🏫 学校', hint:'', words:[['école','学校'],['livre','书'],['crayon','铅笔'],['table','桌子'],['chaise','椅子'],['sac','书包'],['classe','班级'],['professeur','老师'],['élève','学生'],['cahier','练习本'],['stylo','笔'],['règle','尺子'],['gomme','橡皮'],['colle','胶水'],['ciseaux','剪刀'],['devoir','作业'],['leçon','课'],['récréation','课间休息'],['bibliothèque','图书馆']]},
+{title:'🏃 常用动词', hint:'', words:[['manger','吃'],['boire','喝'],['jouer','玩'],['lire','读'],['écrire','写'],['courir','跑'],['dormir','睡觉'],['aimer','喜欢'],['voir','看见'],['aller','去'],['venir','来'],['dire','说'],['faire','做'],['écouter','听'],['nager','游泳'],['chanter','唱歌'],['danser','跳舞'],['dessiner','画画'],['regarder','看'],['parler','说话'],['apprendre','学习'],['comprendre','理解'],['aider','帮助'],['ouvrir','打开']]},
+{title:'👕 衣服', hint:'新加的一组', words:[['vêtements','衣服'],['chemise','衬衫'],['pantalon','裤子'],['robe','裙子'],['chaussures','鞋子'],['chapeau','帽子'],['manteau','大衣'],['chaussettes','袜子'],['gants','手套'],['écharpe','围巾']]},
+{title:'🌤 天气 · 自然', hint:'新加的一组', words:[['soleil','太阳'],['lune','月亮'],['étoile','星星'],['nuage','云'],['pluie','雨'],['neige','雪'],['vent','风'],['ciel','天空'],['arbre','树'],['fleur','花'],['montagne','山'],['rivière','河'],['mer','海']]},
+{title:'📅 星期 · 时间', hint:'新加的一组', words:[['lundi','星期一'],['mardi','星期二'],['mercredi','星期三'],['jeudi','星期四'],['vendredi','星期五'],['samedi','星期六'],['dimanche','星期日'],['matin','早上'],['soir','晚上'],['nuit','夜晚'],["aujourd'hui",'今天'],['demain','明天'],['hier','昨天']]},
+{title:'📍 地方', hint:'新加的一组', words:[['parc','公园'],['magasin','商店'],['hôpital','医院'],['cuisine','厨房'],['chambre','卧室'],['salon','客厅'],['jardin','花园'],['rue','街道'],['ville','城市']]},
+{title:'✨ 形容词', hint:'新加的一组', words:[['grand','大'],['petit','小'],['beau','漂亮'],['joli','好看'],['gentil','善良/友好'],['content','高兴'],['triste','难过'],['fatigué','累'],['chaud','热'],['froid','冷']]}
+];
+var SOUNDS = [
+{title:'an / en —— 鼻音', hint:'像“昂”，嘴巴张开、鼻子出气：enfant、maman、dans', words:[['enfant','孩子'],['maman','妈妈'],['dans','在……里'],['vent','风'],['pain','面包'],['main','手'],['chanson','歌'],['argent','钱'],['temps','天气/时间'],['quand','什么时候'],['grand','大'],['vraiment','真的'],['lentement','慢慢地'],['souvent','经常']]},
+{title:'on —— 鼻音', hint:'像“翁”：bonjour、maison、poisson', words:[['bonjour','你好'],['maison','房子'],['poisson','鱼'],['garçon','男孩'],['bon','好'],['mon','我的'],['bonbon','糖果'],['nombre','数字'],['oncle','叔叔/舅舅'],['compter','数数'],['monde','世界']]},
+{title:'eau / au —— 读“哦”', hint:'eau 和 au 都读 o：eau、beau、oiseau', words:[['eau','水'],['beau','漂亮'],['oiseau','鸟'],['bateau','船'],['chaud','热'],['aussi','也'],['beaucoup','很多'],["aujourd'hui",'今天'],['bientôt','很快'],['nouveau','新']]},
+{title:'ou —— 读“乌”', hint:'vous、nous、rouge', words:[['vous','你们'],['nous','我们'],['rouge','红色'],['jour','天/白天'],['toujours','总是'],['écouter','听'],['doucement','轻轻地'],['ouvrir','打开'],['surtout','尤其'],['tout le monde','大家']]},
+{title:'ch —— 读“施”', hint:'chat、chien、chocolat', words:[['chat','猫'],['chien','狗'],['chocolat','巧克力'],['chaud','热'],['chercher','找'],['chaque','每个'],['chose','东西'],['chez','在……家']]},
+{title:'oi —— 读“瓦”', hint:'moi、toi、trois', words:[['moi','我'],['toi','你'],['trois','三'],['oiseau','鸟'],['voir','看见'],['voici','看，这是'],['voilà','看，那是'],['boire','喝'],['soir','晚上'],['histoire','故事']]},
+{title:'é / è —— e 的两种音', hint:'é 读“诶”，è 读“唉”：école、père', words:[['école','学校'],['élève','学生'],['père','爸爸'],['mère','妈妈'],['frère','哥哥/弟弟'],['café','咖啡'],['bébé','宝宝'],['après','之后'],['très','非常'],['près','近'],['première','第一']]},
+{title:'in / ain —— 鼻音', hint:'像“安”，嘴巴小一点：pain、matin、lapin', words:[['pain','面包'],['main','手'],['lapin','兔子'],['matin','早上'],['jardin','花园'],['demain','明天'],['copain','朋友'],['certain','确定']]},
+{title:'ille / gn —— 读“耶”/“尼耶”', hint:'fille、famille、montagne', words:[['fille','女孩'],['famille','家庭'],['grenouille','青蛙'],['papillon','蝴蝶'],['montagne','山'],['gagner','赢']]},
+{title:'tion / sion —— 读“西翁”', hint:'attention、question、télévision', words:[['attention','注意'],['question','问题'],['leçon','课'],['télévision','电视'],['récréation','课间休息'],['imagination','想象力']]},
+{title:'词尾不发音', hint:'这些词最后那个字母是不读的：petit 的 t、grand 的 d、beaucoup 的 p', words:[['petit','小'],['grand','大'],['beaucoup','很多'],['enfant','孩子'],['dans','在……里'],['mes','我的（复数）'],['les','（定冠词，复数）'],['vous','你们'],['toujours','总是'],['nez','鼻子']]}
+];
+var LEARNED_KEY = 'french-vocab-learned';
+var learned = {};
+try { learned = JSON.parse(localStorage.getItem(LEARNED_KEY) || '{}');} catch(e){}
+var vocabMode = 'theme';
+var playingAll = false;
+var currentCard = null;
+
+function vocabAllWords(){
+var src = vocabMode === 'theme'? THEMES: SOUNDS;
+var out = [];
+src.forEach(function(g){ g.words.forEach(function(w){ out.push(w);});});
+return out;
+}
+function updateProgress(){
+var all = vocabAllWords();
+var n = all.filter(function(w){ return learned[w[0]];}).length;
+document.getElementById('progress').textContent = '已会 ' + n + ' / ' + all.length + ' 个词';
+}
+function speak(text, card, onend){
+if (!('speechSynthesis' in window)) { alert('这台设备不支持语音朗读'); return;}
+window.speechSynthesis.cancel();
+var u = new SpeechSynthesisUtterance(text);
+u.lang = 'fr-FR';
+u.rate = parseFloat(document.getElementById('rate').value);
+var v = speechSynthesis.getVoices().find(function(x){ return x.lang && x.lang.toLowerCase().indexOf('fr') === 0;});
+if (v) u.voice = v;
+if (currentCard) currentCard.classList.remove('playing');
+if (card) { card.classList.add('playing'); currentCard = card;}
+u.onend = function(){ if (card) card.classList.remove('playing'); if (onend) onend();};
+u.onerror = function(){ if (card) card.classList.remove('playing'); if (onend) onend();};
+speechSynthesis.speak(u);
+}
+function saveLearned(){
+try { localStorage.setItem(LEARNED_KEY, JSON.stringify(learned));} catch(e){}
+updateProgress();
+}
+function makeWordCard(w, zhText){
+var c = document.createElement('div'); c.className = 'word' + (learned[w[0]]? ' learned': '');
+c.innerHTML = '<button class="star" aria-label="我会了">' + (learned[w[0]]? '★': '☆') + '</button><div class="fr"></div><div class="zh"></div><div class="spk">🔊 点我听</div>';
+c.querySelector('.fr').textContent = w[0];
+c.querySelector('.zh').textContent = zhText || '翻译中…';
+c.dataset.word = w[0];
+c.addEventListener('click', function(e){
+if (e.target.classList.contains('star')) return;
+speak(w[0], c);
+});
+c.querySelector('.star').addEventListener('click', function(e){
+e.stopPropagation();
+learned[w[0]] =!learned[w[0]];
+if (!learned[w[0]]) delete learned[w[0]];
+saveLearned(); renderVocab(); renderLessonWords();
+});
+return c;
+}
+function renderLessonWords(){
+var box = document.getElementById('lessonWordsBox');
+var grid = document.getElementById('lessonWords');
+if (!sentences.length) { box.style.display = 'none'; return;}
+box.style.display = 'block';
+grid.innerHTML = '';
+var keys = extractKeyWords();
+if (!keys.length) { grid.innerHTML = '<p class="note">这篇课文里没有找出生词。</p>'; return;}
+keys.forEach(function(w){
+var c = makeWordCard([w, ''], '');
+grid.appendChild(c);
+translateFr(w).then(function(tr){ if (tr) c.querySelector('.zh').textContent = tr; else c.querySelector('.zh').textContent = '';});
+});
+}
+function renderVocab(){
+var q = document.getElementById('search').value.trim().toLowerCase();
+var box = document.getElementById('vocabList'); box.innerHTML = '';
+var src = vocabMode === 'theme'? THEMES: SOUNDS;
+src.forEach(function(g){
+var words = g.words.filter(function(w){ return!q || w[0].toLowerCase().indexOf(q)!== -1 || w[1].indexOf(q)!== -1;});
+if (!words.length) return;
+var gd = document.createElement('div'); gd.className = 'group';
+var h = document.createElement('h2'); h.textContent = g.title; gd.appendChild(h);
+if (g.hint) { var hi = document.createElement('p'); hi.className = 'hint'; hi.textContent = g.hint; gd.appendChild(hi);}
+var grid = document.createElement('div'); grid.className = 'words';
+words.forEach(function(w){ grid.appendChild(makeWordCard(w, w[1]));});
+gd.appendChild(grid); box.appendChild(gd);
+});
+updateProgress();
+}
+function stopAll(){
+playingAll = false;
+if ('speechSynthesis' in window) speechSynthesis.cancel();
+var b = document.getElementById('playAll');
+b.textContent = '🔊 词库全部读一遍';
+b.classList.remove('stop');
+var lb = document.getElementById('playLessonWords');
+lb.textContent = '🔊 本课生词读一遍';
+lb.classList.remove('stop');
+}
+function playCards(cards, btn){
+if (playingAll) { stopAll(); return;}
+if (!cards.length) return;
+playingAll = true;
+btn.textContent = '⏹ 停止';
+btn.classList.add('stop');
+var i = 0;
+function next(){
+if (!playingAll || i >= cards.length) { stopAll(); return;}
+var c = cards[i]; i++;
+c.scrollIntoView({block:'nearest', behavior:'smooth'});
+speak(c.dataset.word, c, function(){ setTimeout(next, 400);});
+}
+next();
+}
+document.getElementById('tabTheme').addEventListener('click', function(){
+vocabMode = 'theme'; stopAll();
+document.getElementById('tabTheme').classList.add('active');
+document.getElementById('tabSound').classList.remove('active');
+renderVocab();
+});
+document.getElementById('tabSound').addEventListener('click', function(){
+vocabMode = 'sound'; stopAll();
+document.getElementById('tabSound').classList.add('active');
+document.getElementById('tabTheme').classList.remove('active');
+renderVocab();
+});
+document.getElementById('search').addEventListener('input', renderVocab);
+document.getElementById('rate').addEventListener('input', function(){
+document.getElementById('rateVal').textContent = this.value;
+});
+document.getElementById('playAll').addEventListener('click', function(){
+playCards(Array.prototype.slice.call(document.querySelectorAll('#vocabList.word')), this);
+});
+document.getElementById('playLessonWords').addEventListener('click', function(){
+playCards(Array.prototype.slice.call(document.querySelectorAll('#lessonWords.word')), this);
+});
+if ('speechSynthesis' in window) speechSynthesis.getVoices();
+renderVocab();
+
+/* ============ 朗读跟读（第 2 周，无 Azure 的过渡版） ============ */
+var ratingsKey = 'french-mvp-read-ratings';
+var ratings = {};
+try { ratings = JSON.parse(localStorage.getItem(ratingsKey) || '{}');} catch(e){}
+var recUrls = {};
+var micStream = null;
+var mediaRecorder = null;
+var recIdx = -1;
+var recChunks = [];
+
+function lessonRatings(){
+var name = document.getElementById('lessonName').value;
+if (!ratings[name]) ratings[name] = {};
+return ratings[name];
+}
+function saveRatings(){
+try { localStorage.setItem(ratingsKey, JSON.stringify(ratings));} catch(e){}
+}
+function updateReadProgress(){
+var r = lessonRatings();
+var total = sentences.length;
+var done = 0, good = 0, ok = 0, bad = 0;
+for (var i = 0; i < total; i++) {
+var v = r[i];
+if (v) { done++; if (v === 'good') good++; else if (v === 'ok') ok++; else if (v === 'bad') bad++;}
+}
+document.getElementById('readProgress').textContent = total? ('已评 ' + done + ' / ' + total + ' 句：读得顺 ' + good + ' 句 · 有点卡 ' + ok + ' 句 · 不会读 ' + bad + ' 句'): '';
+}
+function renderReadPanel(){
+var box = document.getElementById('readList');
+box.innerHTML = '';
+if (!sentences.length) {
+box.innerHTML = '<p class="empty">还没导入课文。<br>先去「📖 课文」里粘贴一篇课文，点“整理课文”，句子会出现在这里。</p>';
+updateReadProgress();
+return;
+}
+var r = lessonRatings();
+sentences.forEach(function(s, i){
+var card = document.createElement('div'); card.className = 'readcard';
+var fr = document.createElement('div'); fr.className = 'fr';
+// 句子按空格分词，点单词单独听
+s.split(' ').forEach(function(tok){
+var span = document.createElement('span'); span.className = 'w'; span.textContent = tok;
+span.addEventListener('click', function(){ speak(tok.replace(/[^A-Za-zÀ-ÿ'-]/g, '') || tok, null);});
+fr.appendChild(span);
+fr.appendChild(document.createTextNode(' '));
+});
+var zh = document.createElement('div'); zh.className = 'zh'; zh.textContent = '翻译中…';
+translateFr(s).then(function(tr){ if (tr) zh.textContent = tr; else zh.textContent = '';});
+var row = document.createElement('div'); row.className = 'row';
+var demoBtn = document.createElement('button'); demoBtn.textContent = '🔊 听示范';
+demoBtn.addEventListener('click', function(){ speak(s, null);});
+var recBtn = document.createElement('button'); recBtn.className = 'rec'; recBtn.textContent = '🎙️ 开始录音';
+recBtn.addEventListener('click', function(){ toggleRec(i, recBtn, audioEl);});
+row.appendChild(demoBtn); row.appendChild(recBtn);
+var audioEl = document.createElement('audio'); audioEl.controls = true; audioEl.style.display = 'none';
+if (recUrls[i]) { audioEl.src = recUrls[i]; audioEl.style.display = 'block';}
+var rateRow = document.createElement('div'); rateRow.className = 'ratebtns';
+[['good','😊 读得顺'],['ok','😐 有点卡'],['bad','😟 不会读']].forEach(function(opt){
+var b = document.createElement('button');
+b.textContent = opt[1]; b.className = opt[0] + (r[i] === opt[0]? ' on': '');
+b.addEventListener('click', function(){
+lessonRatings()[i] = opt[0];
+saveRatings(); renderReadPanel();
+});
+rateRow.appendChild(b);
+});
+card.appendChild(fr); card.appendChild(zh); card.appendChild(row); card.appendChild(audioEl); card.appendChild(rateRow);
+box.appendChild(card);
+});
+updateReadProgress();
+}
+async function toggleRec(i, btn, audioEl){
+if (mediaRecorder && mediaRecorder.state === 'recording') {
+mediaRecorder.stop();
+return;
+}
+if (!('MediaRecorder' in window) ||!navigator.mediaDevices ||!navigator.mediaDevices.getUserMedia) {
+alert('这台设备或浏览器不支持录音，请用 Chrome 或 Safari 试试。');
+return;
+}
+try {
+if (!micStream) micStream = await navigator.mediaDevices.getUserMedia({audio: true});
+} catch(e) {
+alert('没拿到麦克风权限：请在浏览器地址栏旁边点允许麦克风，再试一次。');
+return;
+}
+recChunks = [];
+mediaRecorder = new MediaRecorder(micStream);
+recIdx = i;
+mediaRecorder.ondataavailable = function(e){ if (e.data && e.data.size) recChunks.push(e.data);};
+mediaRecorder.onstop = function(){
+var blob = new Blob(recChunks, {type: mediaRecorder.mimeType || 'audio/webm'});
+if (recUrls[recIdx]) URL.revokeObjectURL(recUrls[recIdx]);
+recUrls[recIdx] = URL.createObjectURL(blob);
+btn.textContent = '🎙️ 开始录音';
+btn.classList.remove('recording');
+audioEl.src = recUrls[recIdx];
+audioEl.style.display = 'block';
+};
+mediaRecorder.start();
+btn.textContent = '⏹ 停止录音';
+btn.classList.add('recording');
+}
+
+/* ============ 理解检查（第 3 周） ============ */
+var quizResultsKey = 'french-mvp-quiz-results';
+var quizQuestions = [];
+var quizAnswered = 0;
+var quizCorrect = 0;
+
+function libraryWords(){
+  var seen = {}, out = [];
+  THEMES.concat(SOUNDS).forEach(function(g){
+    g.words.forEach(function(w){
+      if (!seen[w[0]]) { seen[w[0]] = true; out.push(w); }
     });
-    var zh = document.createElement('div');
-    zh.className = 'zh';
-    zh.textContent = demoZh[s] || '点“译”查看中文';
-    zh.id = 'zh-' + i;
-    var tools = document.createElement('div');
-    tools.className = 'tools';
-    var play = document.createElement('button');
-    play.textContent = '▶ 读这句';
-    play.onclick = function(e){ e.stopPropagation(); speakSentence(i); };
-    var tr = document.createElement('button');
-    tr.textContent = '译';
-    tr.className = 'secondary';
-    tr.onclick = function(e){ e.stopPropagation(); translateSentence(i, s); };
-    tools.appendChild(play); tools.appendChild(tr);
-    div.appendChild(fr); div.appendChild(zh); div.appendChild(tools);
-    div.onclick = function(){ speakSentence(i); };
-    box.appendChild(div);
   });
+  return out;
 }
-function pickVoice(){
-  var vs = speechSynthesis.getVoices();
-  return vs.find(function(v){ return v.lang === 'fr-CA'; }) ||
-         vs.find(function(v){ return v.lang && v.lang.indexOf('fr') === 0; }) || null;
-}
-function rate(){ return parseFloat(document.getElementById('rate').value); }
-function speakWord(word){
-  speechSynthesis.cancel();
-  var clean = word.replace(/[.,!?;:()"“”]/g, '');
-  if (!clean) return;
-  var u = new SpeechSynthesisUtterance(clean);
-  u.lang = 'fr-FR'; u.rate = rate();
-  var v = pickVoice(); if (v) u.voice = v;
-  speechSynthesis.speak(u);
-}
-function speakSentence(i){
-  if (!sentences[i]) return;
-  speechSynthesis.cancel();
-  currentIdx = i; renderSentences();
-  var u = new SpeechSynthesisUtterance(sentences[i]);
-  u.lang = 'fr-FR'; u.rate = rate();
-  var v = pickVoice(); if (v) u.voice = v;
-  u.onend = function(){ currentIdx = -1; renderSentences(); };
-  speechSynthesis.speak(u);
-}
-function speakAll(){
-  if (!sentences.length) { status('这一页还没有句子，先打开 PDF 或用演示句。'); return; }
-  speechSynthesis.cancel();
-  speaking = true;
-  var i = 0;
-  function next(){
-    if (!speaking || i >= sentences.length) { speaking = false; currentIdx = -1; renderSentences(); return; }
-    currentIdx = i; renderSentences();
-    var u = new SpeechSynthesisUtterance(sentences[i]);
-    u.lang = 'fr-FR'; u.rate = rate();
-    var v = pickVoice(); if (v) u.voice = v;
-    u.onend = function(){ i++; setTimeout(next, 350); };
-    speechSynthesis.speak(u);
+function shuffle(arr){
+  var a = arr.slice();
+  for (var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
   }
-  next();
+  return a;
 }
-async function translateSentence(i, s){
-  var el = document.getElementById('zh-' + i);
-  if (demoZh[s]) { el.textContent = demoZh[s]; el.classList.add('show'); return; }
-  el.textContent = '翻译中…'; el.classList.add('show');
-  try {
-    var url = 'https://translate.googleapis.com/translate_a/single?client=gtx&sl=fr&tl=zh-CN&dt=t&q=' + encodeURIComponent(s);
-    var r = await fetch(url);
-    var j = await r.json();
-    el.textContent = (j[0] || []).map(function(x){ return x[0]; }).join('');
-  } catch (e) { el.textContent = '翻译要联网，请检查网络后重试。'; }
+function pickN(arr, n, exclude){
+  var pool = shuffle(arr.filter(function(x){ return exclude.indexOf(x) === -1; }));
+  return pool.slice(0, n);
 }
-async function renderPage(num){
-  if (!pdfDoc) return;
-  pageNum = num;
-  document.getElementById('pageInfo').textContent = '第 ' + pageNum + ' / ' + pdfDoc.numPages + ' 页';
-  document.getElementById('prevBtn').disabled = pageNum <= 1;
-  document.getElementById('nextBtn').disabled = pageNum >= pdfDoc.numPages;
-  document.getElementById('ocrBtn').disabled = false;
-  var page = await pdfDoc.getPage(pageNum);
-  var viewport = page.getViewport({ scale: 1.5 });
-  var canvas = document.getElementById('pdfCanvas');
-  canvas.width = viewport.width; canvas.height = viewport.height;
-  await page.render({ canvasContext: canvas.getContext('2d'), viewport: viewport }).promise;
-  var tc = await page.getTextContent();
-  var lines = {};
-  tc.items.forEach(function(it){
-    var y = Math.round(it.transform[5]);
-    var key = null;
-    Object.keys(lines).forEach(function(k){ if (Math.abs(parseFloat(k) - y) < 5) key = k; });
-    if (key === null) { lines[y] = []; key = y; }
-    lines[key].push(it);
-  });
-  var ordered = Object.keys(lines).sort(function(a,b){ return b - a; });
-  var text = ordered.map(function(k){
-    return lines[k].sort(function(a,b){ return a.transform[4] - b.transform[4]; }).map(function(it){ return it.str; }).join(' ');
-  }).join('\n');
-  sentences = splitSentences(text);
-  renderSentences();
-  var warn = document.getElementById('ocrWarn');
-  if (!sentences.length) {
-    warn.innerHTML = '<div class="warn">这一页取不到内置文字，可能是扫描版 PDF。请点下面“对本页做 OCR”，或确认这本电子书是不是文字版。</div>';
-    status('这一页没有可提取的文字（扫描版可能）。');
+function soundGroupOf(word){
+  for (var i = 0; i < SOUNDS.length; i++) {
+    var ws = SOUNDS[i].words.map(function(w){ return w[0]; });
+    if (ws.indexOf(word) !== -1) return ws;
+  }
+  return null;
+}
+function showLastQuiz(){
+  var el = document.getElementById('quizLast');
+  var last = null;
+  try { last = JSON.parse(localStorage.getItem(quizResultsKey) || 'null'); } catch(e){}
+  var name = document.getElementById('lessonName').value;
+  if (last && last.name === name) {
+    el.textContent = '上次检查：答对 ' + last.correct + ' / ' + last.total + ' 题（' + last.date + '）';
   } else {
-    warn.innerHTML = '';
-    status('已从 PDF 文字层取出 ' + sentences.length + ' 句（不用 OCR）。点任意一句即可跟读。');
+    el.textContent = '';
   }
 }
-document.getElementById('pdfFile').addEventListener('change', async function(e){
-  var f = e.target.files[0];
-  if (!f) return;
-  status('正在打开 ' + f.name + ' …');
-  var buf = await f.arrayBuffer();
-  pdfDoc = await pdfjsLib.getDocument({ data: buf }).promise;
-  await renderPage(1);
-});
-document.getElementById('prevBtn').onclick = function(){ if (pageNum > 1) renderPage(pageNum - 1); };
-document.getElementById('nextBtn').onclick = function(){ if (pdfDoc && pageNum < pdfDoc.numPages) renderPage(pageNum + 1); };
-document.getElementById('playAllBtn').onclick = speakAll;
-document.getElementById('stopBtn').onclick = function(){ speaking = false; speechSynthesis.cancel(); currentIdx = -1; renderSentences(); };
-document.getElementById('rate').oninput = function(){ document.getElementById('rateVal').textContent = this.value; };
-document.getElementById('demoBtn').onclick = function(){
-  sentences = demoSentences.slice();
-  renderSentences();
-  status('已载入照片那页的两句：C\u2019est l\u2019étang. / Je vais à l\u2019étang. 点一句就读那句。');
-};
-document.getElementById('pasteBtn').onclick = function(){
-  var t = document.getElementById('pasteBox').value;
-  sentences = splitSentences(t);
-  renderSentences();
-  status(sentences.length ? ('已生成 ' + sentences.length + ' 句。') : '粘贴框里还没有可识别的句子。');
-};
-async function ensureTesseract(){
-  if (window.Tesseract) return;
-  await new Promise(function(res, rej){
-    var s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
-    s.onload = res; s.onerror = rej; document.head.appendChild(s);
+function saveQuizResult(){
+  try {
+    localStorage.setItem(quizResultsKey, JSON.stringify({
+      name: document.getElementById('lessonName').value,
+      correct: quizCorrect, total: quizQuestions.length,
+      date: new Date().toLocaleDateString()
+    }));
+    localStorage.setItem('french-mvp-quiz-details', JSON.stringify({
+      name: document.getElementById('lessonName').value,
+      items: quizQuestions.map(function(q){ return {kind: q.kind, word: q.word, result: q.result}; })
+    }));
+  } catch(e){}
+}
+function updateQuizProgress(){
+  var el = document.getElementById('quizProgress');
+  if (!quizQuestions.length) { el.textContent = ''; return; }
+  el.textContent = '已答 ' + quizAnswered + ' / ' + quizQuestions.length + ' 题，答对 ' + quizCorrect + ' 题';
+  if (quizAnswered === quizQuestions.length) {
+    var wrong = quizQuestions.filter(function(q){ return q.result === 'wrong'; });
+    el.textContent += '。' + (wrong.length ? '错了 ' + wrong.length + ' 题，可以点下面“只重练错题”。' : '全对！这篇课文掌握得很好。');
+    saveQuizResult();
+    document.getElementById('retryWrongBtn').style.display = wrong.length ? 'block' : 'none';
+  }
+}
+function renderQuiz(){
+  var box = document.getElementById('quizList');
+  box.innerHTML = '';
+  quizQuestions.forEach(function(q, qi){
+    var card = document.createElement('div'); card.className = 'quizq';
+    var qt = document.createElement('div'); qt.className = 'q';
+    if (q.kind === 'listen') {
+      qt.innerHTML = '<span class="fr">🔊 听一听，选出你听到的词</span>';
+      var playBtn = document.createElement('button'); playBtn.className = 'ghost'; playBtn.textContent = '🔊 再听一遍';
+      playBtn.addEventListener('click', function(){ speak(q.word, null); });
+      qt.appendChild(document.createElement('br')); qt.appendChild(playBtn);
+    } else if (q.kind === 'word') {
+      qt.innerHTML = '<span class="fr"></span> 是什么意思？';
+      qt.querySelector('.fr').textContent = q.word;
+    } else {
+      qt.innerHTML = '这句话是什么意思？<br><span class="fr"></span>';
+      qt.querySelector('.fr').textContent = q.word;
+    }
+    var opts = document.createElement('div'); opts.className = 'opts';
+    q.options.forEach(function(opt){
+      var b = document.createElement('button'); b.textContent = opt;
+      b.addEventListener('click', function(){
+        if (q.result) return;
+        var ok = opt === q.answer;
+        q.result = ok ? 'right' : 'wrong';
+        quizAnswered++; if (ok) quizCorrect++;
+        Array.prototype.forEach.call(opts.children, function(x){
+          x.disabled = true;
+          if (x.textContent === q.answer) x.classList.add('correct');
+          else if (x === b) x.classList.add('wrong');
+        });
+        var fb = document.createElement('div'); fb.className = 'fb';
+        fb.textContent = ok ? '✓ 答对了。' : '✗ 答错了。正确答案是：' + q.answer + (q.kind === 'word' ? '（' + q.word + '）' : '');
+        card.appendChild(fb);
+        updateQuizProgress();
+      });
+      opts.appendChild(b);
+    });
+    card.appendChild(qt); card.appendChild(opts);
+    box.appendChild(card);
+    if (q.kind === 'listen') setTimeout(function(){ speak(q.word, null); }, 300 + qi * 100);
+  });
+  updateQuizProgress();
+}
+async function buildQuiz(onlyWrong){
+  var box = document.getElementById('quizList');
+  if (!sentences.length) {
+    box.innerHTML = '<p class="empty">还没导入课文。<br>先去「📖 课文」里粘贴一篇课文，点“整理课文”，再回来检查。</p>';
+    return;
+  }
+  if (onlyWrong) {
+    var wrong = quizQuestions.filter(function(q){ return q.result === 'wrong'; });
+    if (!wrong.length) return;
+    quizQuestions = wrong.map(function(q){ return {kind: q.kind, word: q.word, answer: q.answer, options: shuffle(q.options), result: null}; });
+    quizAnswered = 0; quizCorrect = 0;
+    document.getElementById('retryWrongBtn').style.display = 'none';
+    renderQuiz();
+    return;
+  }
+  box.innerHTML = '<p class="empty">正在出题（翻译几句课文）…</p>';
+  var lib = libraryWords();
+  var keys = extractKeyWords();
+  var questions = [];
+  // 1. 词义：本课生词，干扰项从词库里抽
+  var wordZh = {};
+  for (var i = 0; i < keys.length; i++) {
+    wordZh[keys[i]] = await translateFr(keys[i]);
+  }
+  keys.slice(0, 8).forEach(function(w){
+    var correct = wordZh[w];
+    if (!correct) return;
+    var distract = pickN(lib.map(function(x){ return x[1]; }), 2, [correct]);
+    if (distract.length < 2) return;
+    questions.push({kind: 'word', word: w, answer: correct, options: shuffle([correct].concat(distract)), result: null});
+  });
+  // 2. 句义：每句课文，干扰项是其他句子的翻译
+  var sentZh = {};
+  for (var j = 0; j < sentences.length; j++) {
+    sentZh[sentences[j]] = await translateFr(sentences[j]);
+  }
+  sentences.forEach(function(s){
+    var correct = sentZh[s];
+    if (!correct) return;
+    var others = sentences.filter(function(x){ return x !== s; }).map(function(x){ return sentZh[x]; }).filter(Boolean);
+    var distract = pickN(others, 2, [correct]);
+    if (!distract.length) return;
+    questions.push({kind: 'sent', word: s, answer: correct, options: shuffle([correct].concat(distract)), result: null});
+  });
+  // 3. 听音选词：从本课生词里挑，干扰项先找同发音组的词
+  keys.slice(0, 6).forEach(function(w){
+    var grp = soundGroupOf(w) || [];
+    var distract = pickN(grp, 2, [w]);
+    if (distract.length < 2) distract = distract.concat(pickN(lib.map(function(x){ return x[0]; }), 2 - distract.length, [w].concat(distract)));
+    if (distract.length < 2) return;
+    questions.push({kind: 'listen', word: w, answer: w, options: shuffle([w].concat(distract)), result: null});
+  });
+  quizQuestions = shuffle(questions);
+  quizAnswered = 0; quizCorrect = 0;
+  document.getElementById('retryWrongBtn').style.display = 'none';
+  renderQuiz();
+}
+document.getElementById('startQuizBtn').addEventListener('click', function(){ buildQuiz(false); });
+document.getElementById('retryWrongBtn').addEventListener('click', function(){ buildQuiz(true); });
+
+/* ============ 诊断辅导（第 4 周） ============ */
+var STATE_LABEL = {mastered:'已掌握', partial:'部分掌握', weak:'需要加强', nodata:'证据不足'};
+var STATE_CLASS = {mastered:'mastered', partial:'partial', weak:'weak', nodata:'nodata'};
+
+function quizDetails(){
+  try {
+    var d = JSON.parse(localStorage.getItem('french-mvp-quiz-details') || 'null');
+    var name = document.getElementById('lessonName').value;
+    if (d && d.name === name) return d.items || [];
+  } catch(e){}
+  return [];
+}
+function quizResultFor(kind, word){
+  var items = quizDetails();
+  for (var i = 0; i < items.length; i++) {
+    if (items[i].kind === kind && items[i].word === word) return items[i].result;
+  }
+  return null;
+}
+function soundHintFor(word){
+  for (var i = 0; i < SOUNDS.length; i++) {
+    var ws = SOUNDS[i].words.map(function(w){ return w[0]; });
+    if (ws.indexOf(word) !== -1) return SOUNDS[i].title;
+  }
+  return '它以字母 ' + word.charAt(0).toUpperCase() + ' 开头';
+}
+function gatherDiagnosis(){
+  var items = [];
+  var details = quizDetails();
+  var r = lessonRatings();
+  // 词汇维度 B：本课生词
+  extractKeyWords().forEach(function(w){
+    var qw = quizResultFor('word', w);
+    var ql = quizResultFor('listen', w);
+    var starred = !!learned[w];
+    var state, why;
+    if (qw === 'right' || ql === 'right') { state = 'mastered'; why = '理解检查答对了'; }
+    else if (qw === 'wrong' || ql === 'wrong') { state = 'weak'; why = '理解检查答错了'; }
+    else if (starred) { state = 'partial'; why = '标了“会了”，但还没在检查里验证过'; }
+    else { state = 'nodata'; why = '还没练过这个词'; }
+    items.push({type:'word', text:w, dim:'B', state:state, why:why});
+  });
+  // 朗读维度 A + 阅读理解维度 C：每句话
+  sentences.forEach(function(s, i){
+    var rating = r[i];
+    var qs = quizResultFor('sent', s);
+    var state, why;
+    if (rating === 'good' && qs === 'right') { state = 'mastered'; why = '读得顺，句义也答对了'; }
+    else if (rating === 'bad' || qs === 'wrong') { state = 'weak'; why = rating === 'bad' ? '自评是“不会读”' : '句义检查答错了'; }
+    else if (rating === 'good' || qs === 'right' || rating === 'ok') { state = 'partial'; why = rating === 'ok' ? '自评是“有点卡”' : '只有一项证据，还没两边都验证'; }
+    else { state = 'nodata'; why = '还没读过、也没检查过这句'; }
+    items.push({type:'sent', text:s, dim:'A', state:state, why:why, rating:rating, qs:qs});
+  });
+  return items;
+}
+function dimSummary(items, dim, label){
+  var list = items.filter(function(x){ return x.dim === dim; });
+  if (!list.length) return '';
+  var c = {mastered:0, partial:0, weak:0, nodata:0};
+  list.forEach(function(x){ c[x.state]++; });
+  return '<div class="dim">' + label + '：已掌握 ' + c.mastered + ' · 部分掌握 ' + c.partial + ' · 需要加强 ' + c.weak + ' · 证据不足 ' + c.nodata + '</div>';
+}
+function renderDiagnosis(){
+  var sumBox = document.getElementById('diagSummary');
+  var listBox = document.getElementById('diagList');
+  if (!sentences.length) {
+    sumBox.innerHTML = '';
+    listBox.innerHTML = '<p class="empty">还没导入课文。<br>先去「📖 课文」里粘贴一篇课文，点“整理课文”，再回来诊断。</p>';
+    return;
+  }
+  var items = gatherDiagnosis();
+  var html = '<div class="card" style="margin-top:12px"><h2>掌握程度总览</h2>'
+    + dimSummary(items, 'B', '词汇理解')
+    + dimSummary(items, 'A', '朗读与阅读理解')
+    + '<div class="dim">独立运用：证据不足（要等第 5 周独立复测，用新题检查）</div></div>';
+  sumBox.innerHTML = html;
+  listBox.innerHTML = '';
+  var weak = items.filter(function(x){ return x.state === 'weak' || x.state === 'partial'; });
+  if (!weak.length) {
+    var allOk = items.every(function(x){ return x.state === 'mastered'; });
+    listBox.innerHTML = '<p class="empty">' + (allOk ? '这篇课文全部已掌握，不用辅导，可以换下一篇了。' : '没有需要辅导的项目。证据不足的项目，先去朗读和理解检查里练一练，数据多了诊断才准。') + '</p>';
+    return;
+  }
+  var h = document.createElement('div'); h.className = 'diagsec';
+  h.innerHTML = '<h3>需要辅导（' + weak.length + ' 项，先给提示，不直接给答案）</h3>';
+  listBox.appendChild(h);
+  weak.forEach(function(it){
+    var card = document.createElement('div'); card.className = 'tutor';
+    var t = document.createElement('div'); t.className = 't';
+    t.textContent = it.text;
+    var badge = document.createElement('span'); badge.className = 'badge ' + STATE_CLASS[it.state]; badge.textContent = STATE_LABEL[it.state];
+    t.appendChild(badge);
+    var why = document.createElement('div'); why.className = 'hint'; why.textContent = '诊断原因：' + it.why + '。';
+    var hintBox = document.createElement('div'); hintBox.className = 'hint';
+    var row = document.createElement('div'); row.className = 'row';
+    var step = 0;
+    var ansBox = document.createElement('div');
+    function showStep(){
+      if (step === 0) {
+        hintBox.textContent = '提示 1：先听一遍，仔细听每个音。';
+      } else if (step === 1) {
+        hintBox.textContent = it.type === 'word'
+          ? '提示 2：发音提示——' + soundHintFor(it.text) + '。再想想它是什么意思。'
+          : '提示 2：关键词是 ' + extractKeyWords().filter(function(w){ return it.text.indexOf(w) !== -1; }).join('、') + '。再想想这句在讲什么。';
+      }
+    }
+    showStep();
+    var listenBtn = document.createElement('button'); listenBtn.textContent = '🔊 听一听';
+    listenBtn.addEventListener('click', function(){ speak(it.text, null); });
+    var nextBtn = document.createElement('button'); nextBtn.className = 'ghost'; nextBtn.textContent = '💡 再给一个提示';
+    nextBtn.addEventListener('click', function(){
+      if (step < 1) { step++; showStep(); }
+      if (step >= 1) nextBtn.style.display = 'none';
+    });
+    var ansBtn = document.createElement('button'); ansBtn.className = 'ghost'; ansBtn.textContent = '👀 实在想不起来，看答案';
+    ansBtn.addEventListener('click', function(){
+      ansBtn.style.display = 'none'; nextBtn.style.display = 'none';
+      var a = document.createElement('div'); a.className = 'ans';
+      a.textContent = '答案：';
+      ansBox.appendChild(a);
+      translateFr(it.text).then(function(tr){
+        a.textContent = '答案：' + (tr || '（翻译失败，请联网后重试）');
+        if (it.type === 'word') {
+          var okBtn = document.createElement('button'); okBtn.textContent = '✓ 我记住了';
+          okBtn.addEventListener('click', function(){
+            learned[it.text] = true; saveLearned(); renderDiagnosis();
+          });
+          ansBox.appendChild(okBtn);
+        }
+      });
+    });
+    row.appendChild(listenBtn); row.appendChild(nextBtn); row.appendChild(ansBtn);
+    card.appendChild(t); card.appendChild(why); card.appendChild(hintBox); card.appendChild(row); card.appendChild(ansBox);
+    listBox.appendChild(card);
   });
 }
-function tidyOcr(text){
-  return (text || '').replace(/\s+/g, ' ').replace(/-\s+/g, '').replace(/\s*[_\*]+\s*/g, ' ').trim();
-}
-async function ocrImageSrc(src, autoRead){
-  status('正在识别截图（法语），请稍等…');
-  try {
-    await ensureTesseract();
-    var r = await Tesseract.recognize(src, 'fra');
-    var text = tidyOcr(r.data.text);
-    sentences = splitSentences(text).filter(function(s){ return s.replace(/[^A-Za-zÀ-ÿ]/g, '').length >= 3; });
-    renderSentences();
-    if (sentences.length) {
-      status('识别出 ' + sentences.length + ' 句，正在读给你听。点一句可重听，点词只读那个词。');
-      if (autoRead) setTimeout(speakAll, 400);
-    } else {
-      status('没识别出文字：截图可能太小、太模糊，或框住了太多图。请把书页放大一点再截一次，只框文字那部分。');
-    }
-  } catch (e) { status('识别失败，请检查网络后重试。'); }
-}
-document.getElementById('shotBtn').onclick = function(){ document.getElementById('imgFile').click(); };
-document.getElementById('imgFile').addEventListener('change', function(e){
-  var f = e.target.files[0];
-  if (!f) return;
-  ocrImageSrc(URL.createObjectURL(f), true);
-});
-document.addEventListener('paste', function(e){
-  var items = (e.clipboardData || window.clipboardData || {}).items || [];
-  for (var i = 0; i < items.length; i++) {
-    if (items[i].type.indexOf('image') === 0) {
-      var f = items[i].getAsFile();
-      if (f) { ocrImageSrc(URL.createObjectURL(f), true); e.preventDefault(); }
-      return;
-    }
-  }
-});
-document.getElementById('ocrBtn').onclick = async function(){
-  if (!pdfDoc) return;
-  status('正在对本页做 OCR（法语），请稍等…');
-  try {
-    await ensureTesseract();
-    var canvas = document.getElementById('pdfCanvas');
-    var r = await Tesseract.recognize(canvas.toDataURL('image/png'), 'fra');
-    var text = tidyOcr(r.data.text);
-    sentences = splitSentences(text);
-    renderSentences();
-    status(sentences.length ? ('OCR 识别出 ' + sentences.length + ' 句，请先核对文字对不对再跟读。') : 'OCR 没识别出文字，这页可能太模糊或字太小。');
-  } catch (e) { status('OCR 加载失败，请检查网络后重试。'); }
-};
-// 默认先载入照片那页，打开就能试
-sentences = demoSentences.slice();
-renderSentences();
-if (window.speechSynthesis) speechSynthesis.getVoices();
+document.getElementById('refreshDiagBtn').addEventListener('click', function(){ renderDiagnosis(); });
+
+/* ============ 打开时恢复上次的课文 ============ */
+(function restoreLesson(){
+var saved = null;
+try { saved = JSON.parse(localStorage.getItem(lessonStoreKey) || 'null');} catch(e){}
+if (!saved ||!saved.text) return;
+document.getElementById('lessonName').value = saved.name || '';
+document.getElementById('lessonText').value = saved.text;
+sentences = splitSentences(saved.text);
+if (!sentences.length) return;
+applyParsedLesson(false);
+status('已恢复上次的课文：' + (saved.name || '') + '，共 ' + sentences.length + ' 句。');
+})();
 </script>
 </body>
 </html>
