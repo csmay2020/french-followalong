@@ -52,6 +52,7 @@ button.ghost{background:#fff;color:#8a6d3b;border:1px solid #e0cfae;font-size:13
 .word.playing{border-color:#e8a04c;box-shadow:0 0 0 2px #f3d9ae}
 .word .fr{font-size:19px;font-weight:bold}
 .word .zh{font-size:13px;color:#7a6a58;margin-top:4px}
+.word .zh-spk{border:none;background:none;cursor:pointer;font-size:13px;padding:0 0 0 4px}
 .word .spk{font-size:16px;margin-top:6px}
 .word .star{position:absolute;top:6px;right:8px;font-size:16px;color:#d8cbb2;background:none;border:0;cursor:pointer;padding:2px}
 .word .star.on{color:#e8a04c}
@@ -97,10 +98,63 @@ button.ghost{background:#fff;color:#8a6d3b;border:1px solid #e0cfae;font-size:13
 .tutor .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 .tutor .row button{margin-top:0;padding:9px 14px;font-size:14px}
 .tutor .ans{font-size:15px;line-height:1.7;margin-top:10px;background:#f3ede3;border-radius:10px;padding:10px}
+.kidbtn{width:100%;border:2px solid #e8a04c;background:#fff3df;color:#8a6d3b;border-radius:14px;padding:14px;font-size:19px;font-weight:bold;cursor:pointer;margin:8px 0 2px}
+.kidhelp{display:none}
+body.kid .kidhelp{display:block;width:100%;font-size:20px;padding:12px;margin:0 0 10px;background:#fff3df;border:1px solid #e0cfae;border-radius:12px;color:#8a6d3b;cursor:pointer}
+.kidhelp-zh{display:none}
+body.kid .kidhelp-zh{display:block;font-size:14px;color:#7a6a58;text-align:center;margin:-4px 0 10px;cursor:pointer}
+body.kid h1{font-size:22px}
+body.kid .wrap > .sub{display:none}
+body.kid .nav button{font-size:17px;padding:16px 2px}
+body.kid #navLesson,body.kid #navGoals,body.kid #navDiagnosis{display:none}
+body.kid .card .sub,body.kid .note,body.kid .dim{display:none}
+body.kid .word .zh .zh-text{display:none}
+body.kid .word .zh-spk{font-size:22px}
+body.kid .word .spk{display:none}
+body.kid .readcard .zh{display:none}
+body.kid .controls,body.kid .tabs{display:none}
+body.kid #expandAllBtn,body.kid #collapseAllBtn{display:none}
+body.kid #saveLessonWords{display:none}
+body.kid #savedGroups .ghost{display:none}
+body.kid .word .fr{font-size:23px}
+body.kid .bigbtn{font-size:18px;padding:15px}
+body.kid .readcard .row button{font-size:19px;padding:14px}
+body.kid .ratebtns button{font-size:32px;padding:14px 6px}
+body.kid .ratebtns .rate-label{display:none}
+body.kid .quizq .q .qhint{display:none}
+body.kid .quizq .opts button{font-size:19px;padding:14px}
+.quizq .opts button.pic{font-size:36px;padding:8px 10px}
+.quizq .q .picbig{font-size:52px;line-height:1.2}
+.quizq .opts .optrow{display:flex;gap:6px}
+.quizq .opts .optrow .ans{flex:1}
+.quizq .opts .optspk{flex:0 0 46px;text-align:center;font-size:17px}
+.quizq .qspk{border:1px solid #e0cfae;background:#fffaf2;border-radius:50%;width:34px;height:34px;font-size:16px;cursor:pointer;margin-left:8px;vertical-align:middle;padding:0}
+body.kid #readProgress,body.kid #quizLast,body.kid #progress{display:none}
+body.kid .hint{display:none}
+.topbtns{display:flex;gap:8px}
+.topbtns .kidbtn{flex:1;width:auto}
+#homeScreen{position:fixed;inset:0;background:#f3ead9;z-index:60;display:flex;align-items:center;justify-content:center;padding:20px}
+.home-card{background:#fffaf2;border:1px solid #e0cfae;border-radius:18px;padding:30px 22px;max-width:420px;width:100%;text-align:center;box-shadow:0 4px 18px rgba(120,90,40,.14)}
+.home-emoji{font-size:56px;line-height:1}
+.home-title{font-size:25px;font-weight:700;margin:10px 0 2px;color:#3a3128}
+.home-sub{color:#8a7a5f;margin-bottom:8px;font-size:15px}
+.home-btn{display:block;width:100%;border:1px solid #e0cfae;border-radius:14px;cursor:pointer;margin-top:14px;color:#3a3128;font-size:21px;padding:18px}
+.home-btn.kid{background:#f7e3b8;font-weight:700}
+.home-btn.parent{background:#fff}
 </style>
 </head>
 <body>
+<div id="homeScreen">
+  <div class="home-card">
+    <div class="home-emoji">📖</div>
+    <div class="home-title">Français · 法语学习</div>
+    <div class="home-sub">Qui es-tu ? · 你是谁？</div>
+    <button class="home-btn kid" id="enterKid">🧒 Enfant · 孩子模式</button>
+    <button class="home-btn parent" id="enterParent">👩 Parent · 家长模式</button>
+  </div>
+</div>
 <div class="wrap">
+<div class="topbtns"><button id="kidModeBtn" class="kidbtn">🧒 孩子模式</button><button id="homeBtn" class="kidbtn">🏠 首页</button></div>
 <h1>📖 法语学习 · P1</h1>
 <p class="sub">顶部导航切换：📖 课文 → 🎯 学习目标 → 👂 生词听一听 → 🎙️ 朗读跟读 → 📝 理解检查 → 🔍 诊断辅导。课文存到这台设备上，刷新后还在。第 2 周的朗读评估先用录音回放 + 自评顶着，自动打分要等 Azure Key。</p>
 
@@ -173,10 +227,17 @@ Je m'étire.</textarea>
 <div class="card">
 <h2>生词听一听</h2>
 <p class="sub" style="margin:0 0 8px">先听、再跟读。点一下词卡就读出来；⭐ 表示“这个词我会了”，存在这台设备上。</p>
+<button class="kidhelp" data-help="vocab">🔊 Écoute</button>
+<div class="kidhelp-zh" data-help="vocab"></div>
 <div id="lessonWordsBox" style="display:none">
 <div class="dim" style="margin-top:4px">本课生词（从上面这篇课文里找出来的）</div>
 <div class="words" id="lessonWords" style="margin-top:8px"></div>
 <button class="bigbtn" id="playLessonWords">🔊 本课生词读一遍</button>
+<button class="bigbtn" id="saveLessonWords">💾 把本课生词存入词库</button>
+</div>
+<div id="savedGroupsBox" style="display:none">
+<div class="dim" style="margin-top:16px">📚 我存的生词组（每篇课文存一组，一直留着，不会被新课文顶掉）</div>
+<div id="savedGroups"></div>
 </div>
 <div class="dim" style="margin-top:16px">词库（200 多个词，随便练）</div>
 <div class="tabs">
@@ -205,6 +266,8 @@ Je m'étire.</textarea>
 <div class="card">
 <h2>🎙️ 朗读跟读</h2>
 <p class="sub" style="margin:0">一句一句来：先听示范，再点录音读一遍，然后听听自己的录音，最后给自己评一下：读得顺 / 有点卡 / 不会读。点句子里的单词可以单独听它的发音。第一次点录音时，浏览器会问能不能用麦克风，点“允许”。</p>
+<button class="kidhelp" data-help="read">🔊 Écoute</button>
+<div class="kidhelp-zh" data-help="read"></div>
 <div class="progress" id="readProgress"></div>
 <div id="readList"><p class="empty">还没导入课文。<br>先去「📖 课文」里粘贴一篇课文，点“整理课文”，句子会出现在这里。</p></div>
 <p class="note">录音只存在这次打开的页面里，关掉页面就没了；自评结果会保存，下次打开还在。自动打分（哪个词读错了）要等 Azure Key，现在先用录音回放 + 自评顶着。</p>
@@ -216,6 +279,8 @@ Je m'étire.</textarea>
 <div class="card">
 <h2>📝 理解检查</h2>
 <p class="sub" style="margin:0">三种小题，点一下就有对错：<b>词义</b>——这个法语词是什么意思；<b>句义</b>——这句话是什么意思；<b>听音选词</b>——听到的是哪个词。答错的会记下来，最下面可以只重练错题。</p>
+<button class="kidhelp" data-help="quiz">🔊 Écoute</button>
+<div class="kidhelp-zh" data-help="quiz"></div>
 <div class="progress" id="quizProgress"></div>
 <div class="progress" id="quizLast"></div>
 <button class="bigbtn" id="startQuizBtn">▶ 开始检查</button>
@@ -441,6 +506,12 @@ var SOUNDS = [
 var LEARNED_KEY = 'french-vocab-learned';
 var learned = {};
 try { learned = JSON.parse(localStorage.getItem(LEARNED_KEY) || '{}');} catch(e){}
+var SAVED_GROUPS_KEY = 'french-saved-word-groups';
+var savedGroups = [];
+try { savedGroups = JSON.parse(localStorage.getItem(SAVED_GROUPS_KEY) || '[]');} catch(e){}
+function saveSavedGroups(){
+try { localStorage.setItem(SAVED_GROUPS_KEY, JSON.stringify(savedGroups));} catch(e){}
+}
 var vocabMode = 'theme';
 var collapsedGroups = {};
 var playingAll = false;
@@ -457,13 +528,14 @@ var all = vocabAllWords();
 var n = all.filter(function(w){ return learned[w[0]];}).length;
 document.getElementById('progress').textContent = '已会 ' + n + ' / ' + all.length + ' 个词';
 }
-function speak(text, card, onend){
+function speak(text, card, onend, lang){
 if (!('speechSynthesis' in window)) { alert('这台设备不支持语音朗读'); return;}
 window.speechSynthesis.cancel();
+lang = lang || 'fr-FR';
 var u = new SpeechSynthesisUtterance(text);
-u.lang = 'fr-FR';
+u.lang = lang;
 u.rate = parseFloat(document.getElementById('rate').value);
-var v = speechSynthesis.getVoices().find(function(x){ return x.lang && x.lang.toLowerCase().indexOf('fr') === 0;});
+var v = speechSynthesis.getVoices().find(function(x){ return x.lang && x.lang.toLowerCase().indexOf(lang.slice(0, 2)) === 0;});
 if (v) u.voice = v;
 if (currentCard) currentCard.classList.remove('playing');
 if (card) { card.classList.add('playing'); currentCard = card;}
@@ -477,13 +549,22 @@ updateProgress();
 }
 function makeWordCard(w, zhText){
 var c = document.createElement('div'); c.className = 'word' + (learned[w[0]]? ' learned': '');
-c.innerHTML = '<button class="star" aria-label="我会了">' + (learned[w[0]]? '★': '☆') + '</button><div class="fr"></div><div class="zh"></div><div class="spk">🔊 点我听</div>';
+c.innerHTML = '<button class="star" aria-label="我会了">' + (learned[w[0]]? '★': '☆') + '</button><div class="fr"></div><div class="zh"><span class="zh-text"></span><button class="zh-spk" aria-label="听中文意思">🔊</button></div><div class="spk">🔊 点我听</div>';
 c.querySelector('.fr').textContent = w[0];
-c.querySelector('.zh').textContent = zhText || '翻译中…';
+c.querySelector('.zh-text').textContent = zhText || '翻译中…';
 c.dataset.word = w[0];
 c.addEventListener('click', function(e){
 if (e.target.classList.contains('star')) return;
 speak(w[0], c);
+});
+c.querySelector('.zh-spk').addEventListener('click', function(e){
+e.stopPropagation();
+var t = c.querySelector('.zh-text').textContent;
+if (t && t !== '翻译中…') { speak(t, null, null, 'zh-CN'); return;}
+if (zhCache[w[0]]) { t = zhCache[w[0]]; c.querySelector('.zh-text').textContent = t; speak(t, null, null, 'zh-CN'); return;}
+translateFr(w[0]).then(function(tr){
+if (tr) { zhCache[w[0]] = tr; saveZhCache(); c.querySelector('.zh-text').textContent = tr; speak(tr, null, null, 'zh-CN');}
+});
 });
 c.querySelector('.star').addEventListener('click', function(e){
 e.stopPropagation();
@@ -492,6 +573,12 @@ if (!learned[w[0]]) delete learned[w[0]];
 saveLearned(); renderVocab(); renderLessonWords();
 });
 return c;
+}
+var ZH_CACHE_KEY = 'french-word-zh-cache';
+var zhCache = {};
+try { zhCache = JSON.parse(localStorage.getItem(ZH_CACHE_KEY) || '{}');} catch(e){}
+function saveZhCache(){
+try { localStorage.setItem(ZH_CACHE_KEY, JSON.stringify(zhCache));} catch(e){}
 }
 function renderLessonWords(){
 var box = document.getElementById('lessonWordsBox');
@@ -504,9 +591,81 @@ if (!keys.length) { grid.innerHTML = '<p class="note">这篇课文里没有找�
 keys.forEach(function(w){
 var c = makeWordCard([w, ''], '');
 grid.appendChild(c);
-translateFr(w).then(function(tr){ if (tr) c.querySelector('.zh').textContent = tr; else c.querySelector('.zh').textContent = '';});
+if (zhCache[w]) { c.querySelector('.zh-text').textContent = zhCache[w]; }
+else { translateFr(w).then(function(tr){ if (tr) { c.querySelector('.zh-text').textContent = tr; zhCache[w] = tr; saveZhCache(); }}); }
 });
 }
+function renderSavedGroups(){
+var box = document.getElementById('savedGroupsBox');
+var wrap = document.getElementById('savedGroups');
+if (!box || !wrap) return;
+if (!savedGroups.length) { box.style.display = 'none'; wrap.innerHTML = ''; return;}
+box.style.display = 'block';
+wrap.innerHTML = '';
+var q = document.getElementById('search').value.trim().toLowerCase();
+savedGroups.forEach(function(g, gi){
+var words = g.words.filter(function(w){ return !q || w[0].toLowerCase().indexOf(q) !== -1 || (w[1] || '').indexOf(q) !== -1;});
+if (!words.length) return;
+var key = 'saved|' + g.id;
+var collapsed = q ? false : (collapsedGroups[key] !== undefined ? collapsedGroups[key] : gi !== 0);
+var gd = document.createElement('div'); gd.className = 'group' + (collapsed ? ' collapsed' : '');
+var h = document.createElement('h2');
+var arrow = document.createElement('span'); arrow.className = 'arrow'; arrow.textContent = collapsed ? '▸' : '▾';
+h.appendChild(arrow); h.appendChild(document.createTextNode(g.name + '（' + words.length + ' 个词）'));
+h.addEventListener('click', function(){
+collapsedGroups[key] = !gd.classList.contains('collapsed');
+gd.classList.toggle('collapsed');
+arrow.textContent = gd.classList.contains('collapsed') ? '▸' : '▾';
+});
+gd.appendChild(h);
+var meta = document.createElement('p'); meta.className = 'hint'; meta.textContent = '存于 ' + g.date;
+gd.appendChild(meta);
+var grid = document.createElement('div'); grid.className = 'words';
+words.forEach(function(w){
+var c = makeWordCard(w, w[1] || '');
+if (!w[1]) { translateFr(w[0]).then(function(tr){ if (tr) c.querySelector('.zh-text').textContent = tr;});}
+grid.appendChild(c);
+});
+gd.appendChild(grid);
+var row = document.createElement('div');
+var pb = document.createElement('button'); pb.className = 'bigbtn groupPlayBtn'; pb.textContent = kidMode ? '🔊 ▶' : '🔊 这一组读一遍';
+pb.addEventListener('click', function(){
+if (gd.classList.contains('collapsed')) { gd.classList.remove('collapsed'); arrow.textContent = '▾'; collapsedGroups[key] = false;}
+playCards(Array.prototype.slice.call(grid.querySelectorAll('.word')), pb);
+});
+var db = document.createElement('button'); db.className = 'ghost'; db.textContent = '🗑 删除这组';
+db.addEventListener('click', function(){
+if (confirm('删除这一组生词？删了就找不回来了。')) {
+savedGroups = savedGroups.filter(function(x){ return x.id !== g.id;});
+saveSavedGroups(); renderSavedGroups();
+}
+});
+row.appendChild(pb); row.appendChild(db);
+gd.appendChild(row);
+wrap.appendChild(gd);
+});
+}
+document.getElementById('saveLessonWords').addEventListener('click', function(){
+var cards = document.querySelectorAll('#lessonWords .word');
+if (!cards.length) { alert('先在“课文”页导入一篇课文，才有生词可以存。'); return;}
+var words = [];
+Array.prototype.forEach.call(cards, function(c){
+var zh = c.querySelector('.zh-text').textContent;
+if (zh === '翻译中…') zh = '';
+words.push([c.dataset.word, zh]);
+});
+var name = (document.getElementById('lessonName').value || '').trim() || '课文生词';
+var sig = words.map(function(w){ return w[0];}).sort().join('|');
+var dup = savedGroups.some(function(g){
+return g.name === name && g.words.map(function(w){ return w[0];}).sort().join('|') === sig;
+});
+if (dup) { alert('这一组生词已经存过了，不用重复存。'); return;}
+var now = new Date();
+var dateStr = now.getFullYear() + '-' + ('0' + (now.getMonth() + 1)).slice(-2) + '-' + ('0' + now.getDate()).slice(-2);
+savedGroups.unshift({id: 'g' + now.getTime(), name: name, date: dateStr, words: words});
+saveSavedGroups(); renderSavedGroups();
+alert('存好了：' + name + '，共 ' + words.length + ' 个词。在生词页往下翻，“我存的生词组”里能找到。');
+});
 function renderVocab(){
 var q = document.getElementById('search').value.trim().toLowerCase();
 var box = document.getElementById('vocabList'); box.innerHTML = '';
@@ -532,22 +691,24 @@ words.forEach(function(w){ grid.appendChild(makeWordCard(w, w[1]));});
 gd.appendChild(grid); box.appendChild(gd);
 });
 updateProgress();
+renderSavedGroups();
 }
 function stopAll(){
 playingAll = false;
 if ('speechSynthesis' in window) speechSynthesis.cancel();
 var b = document.getElementById('playAll');
-b.textContent = '🔊 词库全部读一遍';
+b.textContent = kidMode ? '🔊 ▶' : '🔊 词库全部读一遍';
 b.classList.remove('stop');
 var lb = document.getElementById('playLessonWords');
-lb.textContent = '🔊 本课生词读一遍';
+lb.textContent = kidMode ? '🔊 ▶' : '🔊 本课生词读一遍';
 lb.classList.remove('stop');
+document.querySelectorAll('.groupPlayBtn').forEach(function(x){ x.textContent = kidMode ? '🔊 ▶' : '🔊 这一组读一遍'; x.classList.remove('stop');});
 }
 function playCards(cards, btn){
 if (playingAll) { stopAll(); return;}
 if (!cards.length) return;
 playingAll = true;
-btn.textContent = '⏹ 停止';
+btn.textContent = kidMode ? '⏹' : '⏹ 停止';
 btn.classList.add('stop');
 var i = 0;
 function next(){
@@ -643,9 +804,9 @@ fr.appendChild(document.createTextNode(' '));
 var zh = document.createElement('div'); zh.className = 'zh'; zh.textContent = '翻译中…';
 translateFr(s).then(function(tr){ if (tr) zh.textContent = tr; else zh.textContent = '';});
 var row = document.createElement('div'); row.className = 'row';
-var demoBtn = document.createElement('button'); demoBtn.textContent = '🔊 听示范';
+var demoBtn = document.createElement('button'); demoBtn.textContent = kidMode ? '🔊' : '🔊 听示范';
 demoBtn.addEventListener('click', function(){ speak(s, null);});
-var recBtn = document.createElement('button'); recBtn.className = 'rec'; recBtn.textContent = '🎙️ 开始录音';
+var recBtn = document.createElement('button'); recBtn.className = 'rec'; recBtn.textContent = kidMode ? '🎙️' : '🎙️ 开始录音';
 recBtn.addEventListener('click', function(){ toggleRec(i, recBtn, audioEl);});
 row.appendChild(demoBtn); row.appendChild(recBtn);
 var audioEl = document.createElement('audio'); audioEl.controls = true; audioEl.style.display = 'none';
@@ -653,7 +814,8 @@ if (recUrls[i]) { audioEl.src = recUrls[i]; audioEl.style.display = 'block';}
 var rateRow = document.createElement('div'); rateRow.className = 'ratebtns';
 [['good','😊 读得顺'],['ok','😐 有点卡'],['bad','😟 不会读']].forEach(function(opt){
 var b = document.createElement('button');
-b.textContent = opt[1]; b.className = opt[0] + (r[i] === opt[0]? ' on': '');
+b.className = opt[0] + (r[i] === opt[0]? ' on': '');
+b.innerHTML = opt[1].split(' ')[0] + ' <span class="rate-label">' + opt[1].split(' ').slice(1).join(' ') + '</span>';
 b.addEventListener('click', function(){
 lessonRatings()[i] = opt[0];
 saveRatings(); renderReadPanel();
@@ -688,13 +850,13 @@ mediaRecorder.onstop = function(){
 var blob = new Blob(recChunks, {type: mediaRecorder.mimeType || 'audio/webm'});
 if (recUrls[recIdx]) URL.revokeObjectURL(recUrls[recIdx]);
 recUrls[recIdx] = URL.createObjectURL(blob);
-btn.textContent = '🎙️ 开始录音';
+btn.textContent = kidMode ? '🎙️' : '🎙️ 开始录音';
 btn.classList.remove('recording');
 audioEl.src = recUrls[recIdx];
 audioEl.style.display = 'block';
 };
 mediaRecorder.start();
-btn.textContent = '⏹ 停止录音';
+btn.textContent = kidMode ? '⏹' : '⏹ 停止录音';
 btn.classList.add('recording');
 }
 
@@ -759,10 +921,11 @@ function saveQuizResult(){
 function updateQuizProgress(){
   var el = document.getElementById('quizProgress');
   if (!quizQuestions.length) { el.textContent = ''; return; }
-  el.textContent = '已答 ' + quizAnswered + ' / ' + quizQuestions.length + ' 题，答对 ' + quizCorrect + ' 题';
+  el.textContent = kidMode ? ('✓ ' + quizCorrect + ' · ✗ ' + (quizAnswered - quizCorrect) + ' · ' + quizAnswered + ' / ' + quizQuestions.length) : ('已答 ' + quizAnswered + ' / ' + quizQuestions.length + ' 题，答对 ' + quizCorrect + ' 题');
   if (quizAnswered === quizQuestions.length) {
     var wrong = quizQuestions.filter(function(q){ return q.result === 'wrong'; });
-    el.textContent += '。' + (wrong.length ? '错了 ' + wrong.length + ' 题，可以点下面“只重练错题”。' : '全对！这篇课文掌握得很好。');
+    if (!kidMode) el.textContent += '。' + (wrong.length ? '错了 ' + wrong.length + ' 题，可以点下面“只重练错题”。' : '全对！这篇课文掌握得很好。');
+    else if (!wrong.length) el.textContent += ' 🎉';
     saveQuizResult();
     document.getElementById('retryWrongBtn').style.display = wrong.length ? 'block' : 'none';
   }
@@ -774,42 +937,103 @@ function renderQuiz(){
     var card = document.createElement('div'); card.className = 'quizq';
     var qt = document.createElement('div'); qt.className = 'q';
     if (q.kind === 'listen') {
-      qt.innerHTML = '<span class="fr">🔊 听一听，选出你听到的词</span>';
-      var playBtn = document.createElement('button'); playBtn.className = 'ghost'; playBtn.textContent = '🔊 再听一遍';
+      qt.innerHTML = '<span class="fr qhint">🔊 听一听，选出你听到的词</span>';
+      var playBtn = document.createElement('button'); playBtn.className = 'ghost'; playBtn.textContent = kidMode ? '🔊' : '🔊 再听一遍';
       playBtn.addEventListener('click', function(){ speak(q.word, null); });
       qt.appendChild(document.createElement('br')); qt.appendChild(playBtn);
+    } else if (q.kind === 'listenSent') {
+      qt.innerHTML = '<span class="fr qhint">🔊 听一听，选出你听到的句子</span>';
+      var playBtnS = document.createElement('button'); playBtnS.className = 'ghost'; playBtnS.textContent = kidMode ? '🔊' : '🔊 再听一遍';
+      playBtnS.addEventListener('click', function(){ speak(q.word, null); });
+      qt.appendChild(document.createElement('br')); qt.appendChild(playBtnS);
+    } else if (q.kind === 'picListen') {
+      qt.innerHTML = '<span class="fr qhint">🔊 听一听，选出对的图片</span>';
+      var playBtnP = document.createElement('button'); playBtnP.className = 'ghost'; playBtnP.textContent = kidMode ? '🔊' : '🔊 再听一遍';
+      playBtnP.addEventListener('click', function(){ speak(q.word, null); });
+      qt.appendChild(document.createElement('br')); qt.appendChild(playBtnP);
+    } else if (q.kind === 'picWord') {
+      qt.innerHTML = '<span class="picbig"></span>';
+      qt.querySelector('.picbig').textContent = q.pic;
+    } else if (q.kind === 'cloze') {
+      qt.innerHTML = '<span class="fr"></span>';
+      qt.querySelector('.fr').textContent = q.text;
     } else if (q.kind === 'word') {
       qt.innerHTML = '<span class="fr"></span> 是什么意思？';
       qt.querySelector('.fr').textContent = q.word;
+      var spkW = document.createElement('button'); spkW.className = 'qspk'; spkW.textContent = '🔊';
+      spkW.addEventListener('click', function(){ speak('这个词是什么意思', null, function(){ speak(q.word, null); }, 'zh-CN'); });
+      qt.appendChild(spkW);
     } else {
       qt.innerHTML = '这句话是什么意思？<br><span class="fr"></span>';
       qt.querySelector('.fr').textContent = q.word;
+      var spkS = document.createElement('button'); spkS.className = 'qspk'; spkS.textContent = '🔊';
+      spkS.addEventListener('click', function(){ speak('这句话是什么意思', null, function(){ speak(q.word, null); }, 'zh-CN'); });
+      qt.appendChild(spkS);
     }
     var opts = document.createElement('div'); opts.className = 'opts';
     q.options.forEach(function(opt){
-      var b = document.createElement('button'); b.textContent = opt;
+      var row = document.createElement('div'); row.className = 'optrow';
+      var b = document.createElement('button'); b.className = 'ans'; b.textContent = opt;
+      if (q.kind === 'picListen') b.classList.add('pic');
       b.addEventListener('click', function(){
         if (q.result) return;
         var ok = opt === q.answer;
         q.result = ok ? 'right' : 'wrong';
         quizAnswered++; if (ok) quizCorrect++;
-        Array.prototype.forEach.call(opts.children, function(x){
+        Array.prototype.forEach.call(opts.querySelectorAll('.ans'), function(x){
           x.disabled = true;
           if (x.textContent === q.answer) x.classList.add('correct');
           else if (x === b) x.classList.add('wrong');
         });
+        Array.prototype.forEach.call(opts.querySelectorAll('.optspk'), function(x){ x.disabled = true; });
         var fb = document.createElement('div'); fb.className = 'fb';
-        fb.textContent = ok ? '✓ 答对了。' : '✗ 答错了。正确答案是：' + q.answer + (q.kind === 'word' ? '（' + q.word + '）' : '');
+        fb.textContent = kidMode ? (ok ? '✓ 😊' : '✗ → ' + q.answer) : (ok ? '✓ 答对了。' : '✗ 答错了。正确答案是：' + q.answer + (q.kind === 'word' ? '（' + q.word + '）' : ''));
+        if (kidMode && (q.kind === 'word' || q.kind === 'sent')) {
+          var fsp = document.createElement('button'); fsp.className = 'qspk'; fsp.textContent = '🔊';
+          fsp.addEventListener('click', function(){ speak(q.answer, null, null, 'zh-CN'); });
+          fb.appendChild(fsp);
+          if (!ok) speak(q.answer, null, null, 'zh-CN');
+        }
         card.appendChild(fb);
+        if (q.kind === 'cloze') speak(q.word, null);
         updateQuizProgress();
       });
-      opts.appendChild(b);
+      row.appendChild(b);
+      if (q.kind === 'word' || q.kind === 'sent') {
+        var sp = document.createElement('button'); sp.className = 'optspk'; sp.textContent = '🔊';
+        sp.addEventListener('click', function(){ speak(opt, null, null, 'zh-CN'); });
+        row.appendChild(sp);
+      }
+      opts.appendChild(row);
     });
     card.appendChild(qt); card.appendChild(opts);
     box.appendChild(card);
-    if (q.kind === 'listen') setTimeout(function(){ speak(q.word, null); }, 300 + qi * 100);
+    if (q.kind === 'listen' || q.kind === 'listenSent' || q.kind === 'picListen') setTimeout(function(){ speak(q.word, null); }, 300 + qi * 100);
   });
   updateQuizProgress();
+}
+var EMOJI = {'un':'1️⃣','deux':'2️⃣','trois':'3️⃣','quatre':'4️⃣','cinq':'5️⃣','six':'6️⃣','sept':'7️⃣','huit':'8️⃣','neuf':'9️⃣','dix':'🔟','rouge':'🔴','bleu':'🔵','vert':'🟢','jaune':'🟡','orange':'🟠','noir':'⚫','blanc':'⚪','rose':'🩷','maman':'👩','papa':'👨','mère':'👩','père':'👨','bébé':'👶','frère':'👦','sœur':'👧','fille':'👧','garçon':'👦','enfant':'🧒','famille':'👨‍👩‍👧','grand-mère':'👵','grand-père':'👴','ami':'🧑‍🤝‍🧑','chat':'🐱','chien':'🐶','oiseau':'🐦','poisson':'🐟','lapin':'🐰','lion':'🦁','cheval':'🐴','canard':'🦆','souris':'🐭','éléphant':'🐘','poule':'🐔','cochon':'🐷','vache':'🐮','mouton':'🐑','singe':'🐵','serpent':'🐍','grenouille':'🐸','papillon':'🦋','tête':'🧑','main':'✋','pied':'🦶','œil':'👀','nez':'👃','bouche':'👄','oreille':'👂','bras':'💪','visage':'😊','cheveux':'💇','dents':'🦷','langue':'👅','doigt':'👆','jambe':'🦵','cœur':'❤️','pain':'🍞','lait':'🥛','pomme':'🍎','fromage':'🧀','chocolat':'🍫','banane':'🍌','eau':'💧','jus':'🧃','gâteau':'🍰','riz':'🍚','viande':'🍖','pomme de terre':'🥔','carotte':'🥕','tomate':'🍅','beurre':'🧈','œuf':'🥚','glace':'🍦','bonbon':'🍬','soupe':'🍲','café':'☕','école':'🏫','livre':'📕','crayon':'✏️','chaise':'🪑','sac':'🎒','professeur':'👩‍🏫','élève':'🧑‍🎓','cahier':'📓','stylo':'🖊️','règle':'📏','ciseaux':'✂️','bibliothèque':'📚','manger':'🍽️','boire':'🥤','jouer':'⚽','lire':'📖','écrire':'✍️','courir':'🏃','dormir':'😴','nager':'🏊','chanter':'🎤','danser':'💃','dessiner':'🎨','regarder':'👀','parler':'💬','écouter':'🎧','chemise':'👔','pantalon':'👖','robe':'👗','chaussures':'👟','chapeau':'🧢','manteau':'🧥','chaussettes':'🧦','gants':'🧤','écharpe':'🧣','soleil':'☀️','lune':'🌙','étoile':'⭐','nuage':'☁️','pluie':'🌧️','neige':'❄️','vent':'💨','arbre':'🌳','fleur':'🌸','montagne':'⛰️','rivière':'🏞️','mer':'🌊','maison':'🏠','bateau':'⛵','jardin':'🌷','magasin':'🏪','hôpital':'🏥','cuisine':'🍳','chambre':'🛏️','salon':'🛋️','rue':'🛣️','ville':'🏙️','content':'😄','triste':'😢','fatigué':'🥱','chaud':'🥵','froid':'🥶','nouveau':'🆕','bon':'👍','chanson':'🎵','télévision':'📺','argent':'💰','question':'❓','nombre':'🔢','histoire':'📗','monde':'🌍','lentement':'🐢','matin':'🌅','soir':'🌆','nuit':'🌃'};
+function emojiOf(fr){
+if (!fr) return null;
+var k = fr.toLowerCase().replace(/^[^a-zà-ÿœ]+|[^a-zà-ÿœ'-]+$/g, '');
+return EMOJI[k] || null;
+}
+function escapeRe(x){ return x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+function emojiWordPool(){
+var seen = {}, out = [];
+THEMES.forEach(function(g, gi){
+g.words.forEach(function(w){
+var e = emojiOf(w[0]);
+if (e && !seen[w[0].toLowerCase()]) { seen[w[0].toLowerCase()] = 1; out.push([w[0], e, gi]); }
+});
+});
+SOUNDS.forEach(function(g, si){
+g.words.forEach(function(w){
+var e = emojiOf(w[0]);
+if (e && !seen[w[0].toLowerCase()]) { seen[w[0].toLowerCase()] = 1; out.push([w[0], e, 100 + si]); }
+});
+});
+return out;
 }
 async function buildQuiz(onlyWrong){
   var box = document.getElementById('quizList');
@@ -820,7 +1044,7 @@ async function buildQuiz(onlyWrong){
   if (onlyWrong) {
     var wrong = quizQuestions.filter(function(q){ return q.result === 'wrong'; });
     if (!wrong.length) return;
-    quizQuestions = wrong.map(function(q){ return {kind: q.kind, word: q.word, answer: q.answer, options: shuffle(q.options), result: null}; });
+    quizQuestions = wrong.map(function(q){ return {kind: q.kind, word: q.word, answer: q.answer, options: shuffle(q.options), result: null, pic: q.pic, text: q.text, target: q.target}; });
     quizAnswered = 0; quizCorrect = 0;
     document.getElementById('retryWrongBtn').style.display = 'none';
     renderQuiz();
@@ -835,7 +1059,7 @@ async function buildQuiz(onlyWrong){
   for (var i = 0; i < keys.length; i++) {
     wordZh[keys[i]] = await translateFr(keys[i]);
   }
-  keys.slice(0, 8).forEach(function(w){
+  keys.slice(0, kidMode ? 5 : 8).forEach(function(w){
     var correct = wordZh[w];
     if (!correct) return;
     var distract = pickN(lib.map(function(x){ return x[1]; }), 2, [correct]);
@@ -847,7 +1071,7 @@ async function buildQuiz(onlyWrong){
   for (var j = 0; j < sentences.length; j++) {
     sentZh[sentences[j]] = await translateFr(sentences[j]);
   }
-  sentences.forEach(function(s){
+  sentences.slice(0, kidMode ? 4 : sentences.length).forEach(function(s){
     var correct = sentZh[s];
     if (!correct) return;
     var others = sentences.filter(function(x){ return x !== s; }).map(function(x){ return sentZh[x]; }).filter(Boolean);
@@ -863,7 +1087,46 @@ async function buildQuiz(onlyWrong){
     if (distract.length < 2) return;
     questions.push({kind: 'listen', word: w, answer: w, options: shuffle([w].concat(distract)), result: null});
   });
+  if (kidMode) {
+  // 4. 听音选句（孩子模式）：听一句话，在法语句子里选出同一句
+  sentences.slice(0, 6).forEach(function(s){
+    var others = sentences.filter(function(x){ return x !== s; });
+    var distract = pickN(others, 2, [s]);
+    if (distract.length < 1) return;
+    questions.push({kind: 'listenSent', word: s, answer: s, options: shuffle([s].concat(distract)), result: null});
+  });
+  // 5. 看图理解（孩子模式）：只测本课生词，不用题库的词
+  var targets = [];
+  keys.forEach(function(w){ var e = emojiOf(w); if (e) targets.push([w, e]); });
+  targets.slice(0, 5).forEach(function(t){
+    var emojiDistract = targets.filter(function(x){ return x[0].toLowerCase() !== t[0].toLowerCase() && x[1] !== t[1]; });
+    var seenE = {}, pickedE = [];
+    pickN(emojiDistract, 4, []).forEach(function(d){ if (!seenE[d[1]]) { seenE[d[1]] = 1; pickedE.push(d); } });
+    pickedE = pickedE.slice(0, 2);
+    if (pickedE.length >= 1) {
+      questions.push({kind: 'picListen', word: t[0], answer: t[1], options: shuffle([t[1]].concat(pickedE.map(function(d){ return d[1]; }))), result: null});
+    }
+    var wordDistract = pickN(keys.filter(function(k){ return k.toLowerCase() !== t[0].toLowerCase(); }), 2, []);
+    if (wordDistract.length >= 1) {
+      questions.push({kind: 'picWord', word: t[0], pic: t[1], answer: t[0], options: shuffle([t[0]].concat(wordDistract)), result: null});
+    }
+  });
+  // 6. 选词填空（孩子模式）：把课文里的生词挖空，选对了才说明懂这句原文
+  var keysLow = keys.map(function(k){ return k.toLowerCase(); });
+  sentences.slice(0, 6).forEach(function(sent){
+    var ws = wordsOf(sent);
+    var target = null;
+    for (var wi = 0; wi < ws.length; wi++) { if (keysLow.indexOf(ws[wi].toLowerCase()) !== -1) { target = ws[wi]; break; } }
+    if (!target) return;
+    var distract = pickN(keys.filter(function(k){ return k.toLowerCase() !== target.toLowerCase(); }), 2, []);
+    if (distract.length < 1) return;
+    var blanked = sent.replace(new RegExp('(^|[^A-Za-zÀ-ÿ\'])' + escapeRe(target) + '(?![A-Za-zÀ-ÿ\'])', 'i'), '$1____');
+    if (blanked === sent) return;
+    questions.push({kind: 'cloze', word: sent, target: target, text: blanked, answer: target, options: shuffle([target].concat(distract)), result: null});
+  });
+  }
   quizQuestions = shuffle(questions);
+  if (kidMode && quizQuestions.length > 10) quizQuestions = quizQuestions.slice(0, 10);
   quizAnswered = 0; quizCorrect = 0;
   document.getElementById('retryWrongBtn').style.display = 'none';
   renderQuiz();
@@ -903,7 +1166,7 @@ function gatherDiagnosis(){
   var r = lessonRatings();
   // 词汇维度 B：本课生词
   extractKeyWords().forEach(function(w){
-    var qw = quizResultFor('word', w);
+    var qw = quizResultFor('word', w) || quizResultFor('picListen', w) || quizResultFor('picWord', w);
     var ql = quizResultFor('listen', w);
     var starred = !!learned[w];
     var state, why;
@@ -916,7 +1179,7 @@ function gatherDiagnosis(){
   // 朗读维度 A + 阅读理解维度 C：每句话
   sentences.forEach(function(s, i){
     var rating = r[i];
-    var qs = quizResultFor('sent', s);
+    var qs = quizResultFor('sent', s) || quizResultFor('listenSent', s) || quizResultFor('cloze', s);
     var state, why;
     if (rating === 'good' && qs === 'right') { state = 'mastered'; why = '读得顺，句义也答对了'; }
     else if (rating === 'bad' || qs === 'wrong') { state = 'weak'; why = rating === 'bad' ? '自评是“不会读”' : '句义检查答错了'; }
@@ -1038,6 +1301,53 @@ document.getElementById('ocrInput').addEventListener('change', async function(e)
   }
   e.target.value = '';
 });
+
+/* ============ 孩子模式 ============ */
+var kidMode = false;
+try { kidMode = localStorage.getItem('french-kid-mode') === '1';} catch(e){}
+var KID_HELP = {
+vocab: {fr: 'Touche un mot pour l’entendre. Écoute bien !', zh: '点一个词，就能听到它的读音。仔细听！'},
+read: {fr: 'Écoute la phrase. Après, enregistre ta voix. Après, choisis un visage.', zh: '先听这句话，然后录下自己的声音，再选一个表情。'},
+quiz: {fr: 'Écoute bien, et choisis la bonne réponse.', zh: '仔细听，选出正确的答案。'}
+};
+function applyKidMode(){
+document.body.classList.toggle('kid', kidMode);
+try { localStorage.setItem('french-kid-mode', kidMode ? '1' : '0');} catch(e){}
+document.getElementById('kidModeBtn').textContent = kidMode ? '👩 家长模式' : '🧒 孩子模式';
+document.getElementById('homeBtn').textContent = '🏠 首页';
+document.getElementById('navVocab').textContent = kidMode ? '👂 Mots' : '👂 生词';
+document.getElementById('navRead').textContent = kidMode ? '🎙️ Lire' : '🎙️ 朗读跟读';
+document.getElementById('navQuiz').textContent = kidMode ? '📝 Écoute' : '📝 理解检查';
+document.getElementById('startQuizBtn').textContent = kidMode ? '▶ Go !' : '▶ 开始检查';
+document.querySelector('h1').textContent = kidMode ? '📖 Français' : '📖 法语学习 · P1';
+document.getElementById('playAll').textContent = kidMode ? '🔊 ▶' : '🔊 词库全部读一遍';
+document.getElementById('playLessonWords').textContent = kidMode ? '🔊 ▶' : '🔊 本课生词读一遍';
+document.getElementById('retryWrongBtn').textContent = kidMode ? '🔁 Encore' : '🔁 只重练错题';
+if (kidMode) {
+var active = document.querySelector('.panel.active');
+if (active && (active.id === 'panel-lesson' || active.id === 'panel-goals' || active.id === 'panel-diagnosis')) switchPanel('vocab');
+}
+}
+document.getElementById('kidModeBtn').addEventListener('click', function(){ kidMode = !kidMode; applyKidMode();});
+function enterMode(kid){
+kidMode = kid;
+applyKidMode();
+document.getElementById('homeScreen').style.display = 'none';
+window.scrollTo(0, 0);
+}
+document.getElementById('enterKid').addEventListener('click', function(){ enterMode(true); });
+document.getElementById('enterParent').addEventListener('click', function(){ enterMode(false); });
+document.getElementById('homeBtn').addEventListener('click', function(){ document.getElementById('homeScreen').style.display = 'flex'; window.scrollTo(0, 0); });
+Array.prototype.forEach.call(document.querySelectorAll('.kidhelp'), function(b){
+b.addEventListener('click', function(){ var h = KID_HELP[b.dataset.help]; if (h) speak(h.fr, null);});
+});
+Array.prototype.forEach.call(document.querySelectorAll('.kidhelp-zh'), function(d){
+var h = KID_HELP[d.dataset.help];
+if (h) d.textContent = '🔊 ' + h.zh;
+d.addEventListener('click', function(){ if (h) speak(h.zh, null, null, 'zh-CN');});
+});
+if ('speechSynthesis' in window) { try { speechSynthesis.getVoices(); speechSynthesis.onvoiceschanged = function(){ speechSynthesis.getVoices(); };} catch(e){} }
+applyKidMode();
 
 /* ============ 打开时恢复上次的课文 ============ */
 (function restoreLesson(){
