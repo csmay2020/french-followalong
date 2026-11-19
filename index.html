@@ -183,6 +183,11 @@ Je m'étire.</textarea>
 <input type="file" id="fileInput" accept=".txt" style="display:none">
 <button id="ocrBtn" class="secondary">📷 拍照/选图识别课文</button>
 <input type="file" id="ocrInput" accept="image/*" style="display:none">
+<div style="margin-top:6px;display:flex;gap:6px;align-items:center">
+<input type="password" id="ocrKey" placeholder="识别 Key（和电脑插件同一个，填一次就行）" style="flex:1;padding:9px;border:1px solid #e0cfae;border-radius:10px;background:#fff">
+<button id="ocrKeyEye" class="secondary" type="button">👁</button>
+</div>
+<p class="note" style="margin:4px 0 0">拍照识别用的是云端服务（和电脑插件同一家），照片横着拍也能自动转正。Key 只存在这台设备的浏览器里，不写进文件；不填也能先试，次数有限。</p>
 </div>
 <p class="note" style="margin-top:8px">拍照识别只认印刷体，手写认不出来；拍得越正、越亮越准。识别完先检查一下有没有认错的字，再点“整理课文”。</p>
 <button id="parseBtn">✨ 整理课文，列出学习目标</button>
@@ -1272,32 +1277,81 @@ function renderDiagnosis(){
 }
 document.getElementById('refreshDiagBtn').addEventListener('click', function(){ renderDiagnosis(); });
 
-/* ============ 拍照识别课文（Tesseract.js 法语 OCR） ============ */
-function loadTesseract(){
-  return new Promise(function(resolve, reject){
-    if (window.Tesseract) return resolve();
-    var s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
-    s.onload = resolve;
-    s.onerror = function(){ reject(new Error('识别库加载失败')); };
-    document.head.appendChild(s);
+/* ============ 拍照识别课文（OCR.space 云端识别，和电脑插件同一家） ============ */
+// Key 和插件一样的做法：只存这台设备的浏览器里，不写进文件。
+// 没填自己的 Key 时先用演示 Key（结果里夹带的服务商英文提示会自动清掉）。
+var OCR_KEY_LS = 'french-ocr-key';
+function getOcrKey(){
+  try { return (localStorage.getItem(OCR_KEY_LS) || '').trim(); } catch(e){ return ''; }
+}
+(function initOcrKey(){
+  var el = document.getElementById('ocrKey');
+  if (!el) return;
+  el.value = getOcrKey();
+  el.addEventListener('change', function(){
+    try { localStorage.setItem(OCR_KEY_LS, el.value.trim()); } catch(e){}
+    status(el.value.trim() ? '识别 Key 已保存，只存在这台设备上。' : '识别 Key 已清空。');
   });
+  var eye = document.getElementById('ocrKeyEye');
+  if (eye) eye.addEventListener('click', function(){ el.type = (el.type === 'password') ? 'text' : 'password'; });
+})();
+// 照片先缩到长边 1600 以内再传：手机原图太大，识别服务有大小上限。
+function fileToScaledDataUrl(f){
+  return new Promise(function(resolve, reject){
+    var url = URL.createObjectURL(f);
+    var img = new Image();
+    img.onload = function(){
+      try {
+        var w = img.naturalWidth, h = img.naturalHeight;
+        var scale = Math.min(1, 1600 / Math.max(w, h));
+        var c = document.createElement('canvas');
+        c.width = Math.round(w * scale); c.height = Math.round(h * scale);
+        c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        resolve(c.toDataURL('image/jpeg', 0.85));
+      } catch(err){ reject(err); }
+    };
+    img.onerror = function(){ URL.revokeObjectURL(url); reject(new Error('照片读取失败')); };
+    img.src = url;
+  });
+}
+async function ocrCloudPhoto(dataUrl){
+  var form = new FormData();
+  form.append('apikey', getOcrKey() || 'helloworld');
+  form.append('language', 'fre');
+  form.append('isOverlayRequired', 'false');
+  form.append('scale', 'true');
+  form.append('OCREngine', '2');
+  form.append('detectOrientation', 'true');
+  form.append('base64Image', dataUrl);
+  var resp = await fetch('https://api.ocr.space/parse/image', { method: 'POST', body: form });
+  var json = await resp.json();
+  if (json.IsErroredOnProcessing) { var em = json.ErrorMessage; throw new Error(typeof em === 'string' ? em : ((em && em[0]) || '识别服务出错')); }
+  var pr = json.ParsedResults && json.ParsedResults[0];
+  if (!pr) throw new Error('识别服务没有返回文字');
+  var text = pr.ParsedText || '';
+  text = text.replace(/\[Note:[\s\S]*ocrapi/gi, ' ');
+  text = text.replace(/This result was produced[\s\S]*ocrapi/gi, ' ');
+  var NOTICE = ['helloworld', 'demo key', 'ocr.space', 'ocrapi', 'pro plans', 'testing only', 'not for production', 'get your own free', 'apikey', 'freekey'];
+  text = text.split('\n').filter(function(line){
+    var low = line.toLowerCase();
+    for (var i = 0; i < NOTICE.length; i++) { if (low.indexOf(NOTICE[i]) !== -1) return false; }
+    return true;
+  }).join('\n');
+  return text.trim();
 }
 document.getElementById('ocrBtn').addEventListener('click', function(){ document.getElementById('ocrInput').click(); });
 document.getElementById('ocrInput').addEventListener('change', async function(e){
   var f = e.target.files[0]; if (!f) return;
-  status('正在识别照片里的法语…第一次要联网下载识别库，请稍等。');
+  status('正在识别照片里的法语（云端识别，横着拍也能自动转正）…');
   try {
-    await loadTesseract();
-    var worker = await Tesseract.createWorker('fra');
-    var ret = await worker.recognize(f);
-    await worker.terminate();
-    var text = (ret.data.text || '').trim();
+    var dataUrl = await fileToScaledDataUrl(f);
+    var text = await ocrCloudPhoto(dataUrl);
     if (!text) { status('没识别出文字：请拍得更清楚一点，只认印刷体，手写认不出来。'); return; }
     document.getElementById('lessonText').value = text;
     status('识别完成，已填到课文框里。请检查一下有没有认错的字，再点“整理课文”。');
   } catch(err) {
-    status('识别失败：' + (err && err.message ? err.message : '请检查网络后重试。') + '（识别要联网加载识别库）');
+    status('识别失败：' + (err && err.message ? err.message : '请检查网络后重试。'));
   }
   e.target.value = '';
 });
