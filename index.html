@@ -65,6 +65,11 @@ button.ghost{background:#fff;color:#8a6d3b;border:1px solid #e0cfae;font-size:13
 .readcard .fr{font-size:18px;line-height:1.7}
 .readcard .fr .w{cursor:pointer;border-radius:6px;padding:1px 3px}
 .readcard .fr .w:hover{background:#f3e2c2}
+.readcard .fr .w.chunk-on{background:#ffe1ae}
+.pausemark{color:#e8a04c;font-size:13px;cursor:pointer;user-select:none;padding:0 1px}
+body.kid .pausemark{font-size:20px}
+.rate-row input[type=range]{flex:1}
+body.kid .zhlabel{display:none}
 .readcard .zh{font-size:13px;color:#7a6a58;margin-top:6px}
 .readcard .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 .readcard .row button{margin-top:0;padding:9px 14px;font-size:14px}
@@ -256,8 +261,8 @@ Je m'étire.</textarea>
 <div class="controls">
 <input type="text" id="search" placeholder="搜词：输入法语或中文，比如 chat / 猫">
 <label style="font-size:13px;color:#7a6a58">语速</label>
-<input type="range" id="rate" min="0.5" max="1" step="0.1" value="0.7">
-<span id="rateVal" style="font-size:13px;color:#7a6a58">0.7</span>
+<input type="range" id="rate" class="rate-slider" min="0.5" max="1.2" step="0.1" value="0.7">
+<span id="rateVal" class="rate-val" style="font-size:13px;color:#7a6a58">0.7</span>
 </div>
 <button class="bigbtn" id="playAll">🔊 词库全部读一遍</button>
 <div class="progress" id="progress"></div>
@@ -270,9 +275,16 @@ Je m'étire.</textarea>
 <div class="panel" id="panel-read">
 <div class="card">
 <h2>🎙️ 朗读跟读</h2>
-<p class="sub" style="margin:0">一句一句来：先听示范，再点录音读一遍，然后听听自己的录音，最后给自己评一下：读得顺 / 有点卡 / 不会读。点句子里的单词可以单独听它的发音。第一次点录音时，浏览器会问能不能用麦克风，点“允许”。</p>
+<p class="sub" style="margin:0">一句一句来：先听示范，再点录音读一遍，然后听听自己的录音，最后给自己评一下：读得顺 / 有点卡 / 不会读。点句子里的单词可以单独听它的发音。长句会按停顿一段一段读：句子里的 ⏸ 就是停顿的地方，读到哪一段哪一段会亮起来；点 ⏸ 可以只听它前面那一段。语速用下面的滑杆调，调好会记住，所有页面都按这个速度读。第一次点录音时，浏览器会问能不能用麦克风，点“允许”。</p>
 <button class="kidhelp" data-help="read">🔊 Écoute</button>
 <div class="kidhelp-zh" data-help="read"></div>
+<div class="controls rate-row">
+<span class="zhlabel" style="font-size:13px;color:#7a6a58">语速</span>
+<span aria-hidden="true">🐢</span>
+<input type="range" class="rate-slider" min="0.5" max="1.2" step="0.1" value="0.7">
+<span aria-hidden="true">🐇</span>
+<span class="rate-val" style="font-size:13px;color:#7a6a58">0.7</span>
+</div>
 <div class="progress" id="readProgress"></div>
 <div id="readList"><p class="empty">还没导入课文。<br>先去「📖 课文」里粘贴一篇课文，点“整理课文”，句子会出现在这里。</p></div>
 <p class="note">录音只存在这次打开的页面里，关掉页面就没了；自评结果会保存，下次打开还在。自动打分（哪个词读错了）要等 Azure Key，现在先用录音回放 + 自评顶着。</p>
@@ -533,13 +545,23 @@ var all = vocabAllWords();
 var n = all.filter(function(w){ return learned[w[0]];}).length;
 document.getElementById('progress').textContent = '已会 ' + n + ' / ' + all.length + ' 个词';
 }
+var RATE_KEY = 'french-rate';
+function getRate(){
+var v = parseFloat(localStorage.getItem(RATE_KEY));
+return (v >= 0.5 && v <= 1.2) ? v : 0.7;
+}
+function syncRateUI(){
+var v = getRate();
+document.querySelectorAll('.rate-slider').forEach(function(el){ el.value = v;});
+document.querySelectorAll('.rate-val').forEach(function(el){ el.textContent = v.toFixed(1);});
+}
 function speak(text, card, onend, lang){
 if (!('speechSynthesis' in window)) { alert('这台设备不支持语音朗读'); return;}
 window.speechSynthesis.cancel();
 lang = lang || 'fr-FR';
 var u = new SpeechSynthesisUtterance(text);
 u.lang = lang;
-u.rate = parseFloat(document.getElementById('rate').value);
+u.rate = getRate();
 var v = speechSynthesis.getVoices().find(function(x){ return x.lang && x.lang.toLowerCase().indexOf(lang.slice(0, 2)) === 0;});
 if (v) u.voice = v;
 if (currentCard) currentCard.classList.remove('playing');
@@ -547,6 +569,53 @@ if (card) { card.classList.add('playing'); currentCard = card;}
 u.onend = function(){ if (card) card.classList.remove('playing'); if (onend) onend();};
 u.onerror = function(){ if (card) card.classList.remove('playing'); if (onend) onend();};
 speechSynthesis.speak(u);
+}
+function splitChunks(s){
+var words = s.split(/\s+/).filter(Boolean);
+if (words.length <= 8) return [s];
+var rawParts = s.split(/([,;:])\s+/);
+var parts = [];
+for (var i = 0; i < rawParts.length; i += 2) {
+var pp = rawParts[i] + (rawParts[i + 1] || '');
+if (pp.trim()) parts.push(pp.trim());
+}
+var chunks = [];
+parts.forEach(function(pt){
+var n = pt.split(/\s+/).filter(Boolean).length;
+if (chunks.length && n < 3) chunks[chunks.length - 1] += ' ' + pt;
+else chunks.push(pt);
+});
+if (chunks.length > 1 && chunks[0].split(/\s+/).filter(Boolean).length < 3) {
+chunks[1] = chunks[0] + ' ' + chunks[1];
+chunks.shift();
+}
+var out = [];
+chunks.forEach(function(c){
+var ws = c.split(/\s+/);
+while (ws.length > 14) {
+var cut = -1;
+for (var j = 6; j < ws.length - 3; j++) {
+if (ws[j] === 'et' || ws[j] === 'ou' || ws[j] === 'mais') { cut = j; break; }
+}
+if (cut === -1) break;
+out.push(ws.slice(0, cut).join(' '));
+ws = ws.slice(cut);
+}
+out.push(ws.join(' '));
+});
+return out.length ? out : [s];
+}
+function speakChunks(chunks, spanGroups){
+var i = 0;
+function clearHi(){ spanGroups.forEach(function(g){ g.forEach(function(sp){ sp.classList.remove('chunk-on');});});}
+function next(){
+if (i >= chunks.length) { clearHi(); return; }
+var ci = i; i++;
+clearHi();
+(spanGroups[ci] || []).forEach(function(sp){ sp.classList.add('chunk-on');});
+speak(chunks[ci], null, function(){ setTimeout(next, 380);});
+}
+next();
 }
 function saveLearned(){
 try { localStorage.setItem(LEARNED_KEY, JSON.stringify(learned));} catch(e){}
@@ -747,9 +816,13 @@ src.forEach(function(g){ collapsedGroups[vocabMode + '|' + g.title] = true; });
 renderVocab();
 });
 document.getElementById('search').addEventListener('input', renderVocab);
-document.getElementById('rate').addEventListener('input', function(){
-document.getElementById('rateVal').textContent = this.value;
+document.querySelectorAll('.rate-slider').forEach(function(el){
+el.addEventListener('input', function(){
+try { localStorage.setItem(RATE_KEY, String(parseFloat(el.value))); } catch(e){}
+syncRateUI();
 });
+});
+syncRateUI();
 document.getElementById('playAll').addEventListener('click', function(){
 playCards(Array.prototype.slice.call(document.querySelectorAll('#vocabList .word')).filter(function(c){ return c.offsetParent !== null; }), this);
 });
@@ -799,18 +872,33 @@ var r = lessonRatings();
 sentences.forEach(function(s, i){
 var card = document.createElement('div'); card.className = 'readcard';
 var fr = document.createElement('div'); fr.className = 'fr';
-// 句子按空格分词，点单词单独听
+// 句子按空格分词，点单词单独听；长句按停顿分段，段与段之间有 ⏸ 标记
+var chunks = splitChunks(s);
+var chunkOfWord = [];
+chunks.forEach(function(c, ci){ c.split(/\s+/).filter(Boolean).forEach(function(){ chunkOfWord.push(ci); }); });
+var spanGroups = chunks.map(function(){ return []; });
+var wi = 0;
 s.split(' ').forEach(function(tok){
+var ci = (wi < chunkOfWord.length) ? chunkOfWord[wi] : chunks.length - 1;
 var span = document.createElement('span'); span.className = 'w'; span.textContent = tok;
 span.addEventListener('click', function(){ speak(tok.replace(/[^A-Za-zÀ-ÿ'-]/g, '') || tok, null);});
 fr.appendChild(span);
+spanGroups[ci].push(span);
 fr.appendChild(document.createTextNode(' '));
+if (ci < chunks.length - 1 && (wi + 1 >= chunkOfWord.length || chunkOfWord[wi + 1] !== ci)) {
+var pm = document.createElement('span'); pm.className = 'pausemark'; pm.textContent = '⏸';
+pm.title = '只听这一段';
+(function(cidx){ pm.addEventListener('click', function(){ speakChunks([chunks[cidx]], [spanGroups[cidx]]); }); })(ci);
+fr.appendChild(pm);
+fr.appendChild(document.createTextNode(' '));
+}
+wi++;
 });
 var zh = document.createElement('div'); zh.className = 'zh'; zh.textContent = '翻译中…';
 translateFr(s).then(function(tr){ if (tr) zh.textContent = tr; else zh.textContent = '';});
 var row = document.createElement('div'); row.className = 'row';
 var demoBtn = document.createElement('button'); demoBtn.textContent = kidMode ? '🔊' : '🔊 听示范';
-demoBtn.addEventListener('click', function(){ speak(s, null);});
+demoBtn.addEventListener('click', function(){ if (chunks.length > 1) speakChunks(chunks, spanGroups); else speak(s, null);});
 var recBtn = document.createElement('button'); recBtn.className = 'rec'; recBtn.textContent = kidMode ? '🎙️' : '🎙️ 开始录音';
 recBtn.addEventListener('click', function(){ toggleRec(i, recBtn, audioEl);});
 row.appendChild(demoBtn); row.appendChild(recBtn);
